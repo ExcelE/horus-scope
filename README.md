@@ -3,4 +3,6 @@
 Our goal is to enable people who have cameras on their devices to learn more about the world no matter the language, culture or trend.
 We are augmenting exploration through the utilization of Computer Vision and Deep Learning to deliver a seemless experience on your phone, laptop or desktop.
 
+##### API Docs:
+
 [Under construction]
