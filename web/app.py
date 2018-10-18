@@ -83,20 +83,26 @@ def verifyCredentials(username, password):
 
     return None, False
 
-def appendWiki(name):
-    "Only return the wiki of the first item."
+def appendWiki(name, prob):
+    "Return the wiki of all items."
     if name == "":
         return None
 
     wiki_wiki = wikipediaapi.Wikipedia('en')
-    key = name.split(' ')
+    key = name.split(', ')
     
-    page_py = wiki_wiki.page(key[0])
+    retDict = {
+        "prob": prob
+    }
 
-    if page_py.exists():
-        return page_py.fullurl
+    for item in key:
+        page_py = wiki_wiki.page(item)
+        if page_py.exists():
+            retDict[item] = page_py.fullurl
+        else: 
+            retDict[item] = ""
 
-    return None
+    return retDict
 
 class Classify(Resource):
     def post(self):
@@ -128,9 +134,9 @@ class Classify(Resource):
                 retJson = json.load(f)
                 keyLinks = {}
                 for key in retJson:
-                    keyLinks[key] = appendWiki(key)
+                    if retJson[key] > 0.001:
+                        keyLinks[key] = appendWiki(key, retJson[key])
                 retJson = keyLinks
-
 
         users.update({
             "Username": username
