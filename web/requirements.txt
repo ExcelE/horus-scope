@@ -5,3 +5,4 @@ bcrypt
 numpy
 requests
 tensorflow
+wikipedia-api

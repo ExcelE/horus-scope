@@ -6,7 +6,7 @@ import numpy
 import tensorflow as tf
 import requests
 import subprocess
-import json
+import json, wikipediaapi
 
 app = Flask(__name__)
 api = Api(app)
@@ -83,6 +83,20 @@ def verifyCredentials(username, password):
 
     return None, False
 
+def appendWiki(name):
+    "Only return the wiki of the first item."
+    if name == "":
+        return None
+
+    wiki_wiki = wikipediaapi.Wikipedia('en')
+    key = name.split(' ')
+    
+    page_py = wiki_wiki.page(key[0])
+
+    if page_py.exists():
+        return page_py.fullurl
+
+    return None
 
 class Classify(Resource):
     def post(self):
@@ -112,6 +126,10 @@ class Classify(Resource):
             proc.wait()
             with open("text.txt") as f:
                 retJson = json.load(f)
+                keyLinks = {}
+                for key in retJson:
+                    keyLinks[key] = appendWiki(key)
+                retJson = keyLinks
 
 
         users.update({
