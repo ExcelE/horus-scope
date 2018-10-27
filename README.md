@@ -4,7 +4,7 @@ Our goal is to enable people who have cameras on their devices to learn more abo
 We are augmenting exploration through the utilization of Computer Vision and Deep Learning to deliver a seemless experience on your phone, laptop or desktop.
 
 ### Running the project
-1) Make sure you installed Docker and Docker-Compose
+1) Make sure you installed Docker and Docker-Compose (Run `sudo sh install_docker_docker-ce.sh` on the machine)
 2) Clone repo
 3) ```cd horus-scope```
 4) ```docker-compose build```
