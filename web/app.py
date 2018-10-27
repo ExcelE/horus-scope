@@ -107,21 +107,21 @@ def appendWiki(name, prob):
 class Classify(Resource):
     def post(self):
         postedData = request.get_json()
-
-        username = postedData["username"]
-        password = postedData["password"]
         url = postedData["photo"]
 
-        retJson, error = verifyCredentials(username, password)
-        if error:
-            return jsonify(retJson)
+        # username = postedData["username"]
+        # password = postedData["password"]
 
-        tokens = users.find({
-            "Username":username
-        })[0]["Tokens"]
+        # retJson, error = verifyCredentials(username, password)
+        # if error:
+        #     return jsonify(retJson)
 
-        if tokens<=0:
-            return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+        # tokens = users.find({
+        #     "Username":username
+        # })[0]["Tokens"]
+
+        # if tokens<=0:
+        #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
         r = requests.get(url)
         retJson = {}
