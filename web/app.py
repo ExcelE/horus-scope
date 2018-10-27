@@ -106,9 +106,7 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        postedData = request.get_json()
-        url = postedData["photo"]
-
+        photo = request.files['photo']
         # username = postedData["username"]
         # password = postedData["password"]
 
@@ -123,20 +121,19 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        r = requests.get(url)
+        photo.save('./temp.jpg')
         retJson = {}
-        with open('temp.jpg', 'wb') as f:
-            f.write(r.content)
-            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            ret = proc.communicate()[0]
-            proc.wait()
-            with open("text.txt") as f:
-                retJson = json.load(f)
-                keyLinks = {}
-                for key in retJson:
-                    if retJson[key] > 0.001:
-                        keyLinks[key] = appendWiki(key, retJson[key])
-                retJson = keyLinks
+        
+        proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        ret = proc.communicate()[0]
+        proc.wait()
+        with open("text.txt") as f:
+            retJson = json.load(f)
+            keyLinks = {}
+            for key in retJson:
+                if retJson[key] > 0.001:
+                    keyLinks[key] = appendWiki(key, retJson[key])
+            retJson = keyLinks
 
         # users.update({
         #     "Username": username
