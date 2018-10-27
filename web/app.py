@@ -110,7 +110,7 @@ class Classify(Resource):
 
         username = postedData["username"]
         password = postedData["password"]
-        url = postedData["url"]
+        url = postedData["photo"]
 
         retJson, error = verifyCredentials(username, password)
         if error:
@@ -138,13 +138,15 @@ class Classify(Resource):
                         keyLinks[key] = appendWiki(key, retJson[key])
                 retJson = keyLinks
 
-        users.update({
-            "Username": username
-        },{
-            "$set":{
-                "Tokens": tokens-1
-            }
-        })
+        # users.update({
+        #     "Username": username
+        # },{
+        #     "$set":{
+        #         "Tokens": tokens-1
+        #     }
+        # })
+
+        retJson["status"] = 200
 
         return retJson
 
