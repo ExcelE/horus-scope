@@ -83,62 +83,67 @@ def verifyCredentials(username, password):
 
     return None, False
 
-def appendWiki(name):
-    "Only return the wiki of the first item."
+def appendWiki(name, prob):
+    "Return the wiki of all items."
     if name == "":
         return None
 
     wiki_wiki = wikipediaapi.Wikipedia('en')
-    key = name.split(' ')
+    key = name.split(', ')
     
-    page_py = wiki_wiki.page(key[0])
+    retDict = {
+        "prob": prob
+    }
 
-    if page_py.exists():
-        return page_py.fullurl
+    for item in key:
+        page_py = wiki_wiki.page(item)
+        if page_py.exists():
+            retDict[item] = page_py.fullurl
+        else: 
+            retDict[item] = ""
 
-    return None
+    return retDict
 
 class Classify(Resource):
     def post(self):
-        postedData = request.get_json()
+        photo = request.files['photo']
+        # username = postedData["username"]
+        # password = postedData["password"]
 
-        username = postedData["username"]
-        password = postedData["password"]
-        url = postedData["url"]
+        # retJson, error = verifyCredentials(username, password)
+        # if error:
+        #     return jsonify(retJson)
 
-        retJson, error = verifyCredentials(username, password)
-        if error:
-            return jsonify(retJson)
+        # tokens = users.find({
+        #     "Username":username
+        # })[0]["Tokens"]
 
-        tokens = users.find({
-            "Username":username
-        })[0]["Tokens"]
+        # if tokens<=0:
+        #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        if tokens<=0:
-            return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
-
-        r = requests.get(url)
+        photo.save('./temp.jpg')
         retJson = {}
-        with open('temp.jpg', 'wb') as f:
-            f.write(r.content)
-            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            ret = proc.communicate()[0]
-            proc.wait()
-            with open("text.txt") as f:
-                retJson = json.load(f)
-                keyLinks = {}
-                for key in retJson:
-                    keyLinks[key] = appendWiki(key)
-                retJson = keyLinks
+        
+        proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        ret = proc.communicate()[0]
+        proc.wait()
+        with open("text.txt") as f:
+            retJson = json.load(f)
+            keyLinks = {}
+            for key in retJson:
+                if retJson[key] > 0.001:
+                    keyLinks[key] = appendWiki(key, retJson[key])
+            retJson = keyLinks
 
+        # users.update({
+        #     "Username": username
+        # },{
+        #     "$set":{
+        #         "Tokens": tokens-1
+        #     }
+        # })
 
-        users.update({
-            "Username": username
-        },{
-            "$set":{
-                "Tokens": tokens-1
-            }
-        })
+        retJson["status"] = 200
 
         return retJson
 
