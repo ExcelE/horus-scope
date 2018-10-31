@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
-import bcrypt
+import bcrypt, base64
 import numpy
 import tensorflow as tf
 import requests
@@ -106,7 +106,7 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        photo = request.files['photo']
+        photo = base64.b64decode(request.get_json()[0])
         # username = postedData["username"]
         # password = postedData["password"]
 
