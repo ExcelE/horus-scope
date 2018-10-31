@@ -123,7 +123,7 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        r = base64.b64decode(requests.get(url))
+        r = base64.b64decode(url)
         retJson = {}
         with open('temp.jpg', 'wb') as f:
             f.write(r.content)
