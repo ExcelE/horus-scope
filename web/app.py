@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
-import bcrypt
+import bcrypt, base64
 import numpy
 import tensorflow as tf
 import requests
@@ -106,7 +106,9 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        photo = request.files['photo']
+        postedData = request.get_json()
+        url = postedData[0]
+
         # username = postedData["username"]
         # password = postedData["password"]
 
@@ -121,19 +123,20 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        photo.save('./temp.jpg')
+        r = base64.b64decode(requests.get(url))
         retJson = {}
-        
-        proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        ret = proc.communicate()[0]
-        proc.wait()
-        with open("text.txt") as f:
-            retJson = json.load(f)
-            keyLinks = {}
-            for key in retJson:
-                if retJson[key] > 0.001:
-                    keyLinks[key] = appendWiki(key, retJson[key])
-            retJson = keyLinks
+        with open('temp.jpg', 'wb') as f:
+            f.write(r.content)
+            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            ret = proc.communicate()[0]
+            proc.wait()
+            with open("text.txt") as f:
+                retJson = json.load(f)
+                keyLinks = {}
+                for key in retJson:
+                    if retJson[key] > 0.001:
+                        keyLinks[key] = appendWiki(key, retJson[key])
+                retJson = keyLinks
 
         # users.update({
         #     "Username": username
