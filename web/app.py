@@ -1,3 +1,4 @@
+
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
@@ -106,7 +107,7 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        photo = base64.b64decode(request.get_json()[0])
+        photo = request.get_json()[0]
         # username = postedData["username"]
         # password = postedData["password"]
 
@@ -121,7 +122,11 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        photo.save('./temp.jpg')
+        starter = photo.find(',')
+        image_data = photo[starter+1:]
+        with open("temp.jpg", "wb") as fh:
+            fh.write(base64.decodebytes(image_data.encode()))
+
         retJson = {}
         
         proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
