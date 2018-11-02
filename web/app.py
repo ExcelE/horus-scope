@@ -92,15 +92,16 @@ def appendWiki(name, prob):
     key = name.split(', ')
     
     retDict = {
-        "prob": prob
+        "score": prob,
+        "description": key[0]
     }
 
-    for item in key:
-        page_py = wiki_wiki.page(item)
-        if page_py.exists():
-            retDict[item] = page_py.fullurl
-        else: 
-            retDict[item] = ""
+    page_py = wiki_wiki.page(key[0])
+    if page_py.exists():
+        retDict["wikipediaURL"] = page_py.fullurl
+        retDict["summary"] = page_py.summary
+    else: 
+        return None
 
     return retDict
 
@@ -132,12 +133,12 @@ class Classify(Resource):
             ret = proc.communicate()[0]
             proc.wait()
             with open("text.txt") as g:
-                retJson = json.load(g)
-                keyLinks = {}
-                for key in retJson:
-                    if retJson[key] > 0.001:
-                        keyLinks[key] = appendWiki(key, retJson[key])
-                retJson = keyLinks
+                loaded = json.load(g)
+                keyLinks = []
+                for key in loaded:
+                    if loaded[key] > 0.001:
+                        keyLinks.append(appendWiki(key, loaded[key]))
+                retJson["data"] = (keyLinks)
 
         # users.update({
         #     "Username": username
