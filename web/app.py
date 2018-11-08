@@ -107,10 +107,19 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        photo = request.get_json()[0]
-        starter = photo.find(',')
-        image_data = photo[starter+1:]
-        image_data = bytes(image_data, encoding="ascii")
+        try:
+            photo = request.get_json()[0]
+            starter = photo.find(',')
+            image_data = photo[starter+1:]
+            image_data = bytes(image_data, encoding="ascii")
+            r = base64.decodebytes(image_data)
+            with open('temp.jpg', 'wb') as f:
+                f.write(r)
+
+        except:
+            photo = request.files['photo']
+            r = photo.save('temp.jpg')
+
         # username = postedData["username"]
         # password = postedData["password"]
 
@@ -125,10 +134,8 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        r = base64.decodebytes(image_data)
         retJson = {}
-        with open('temp.jpg', 'wb') as f:
-            f.write(r)
+        with open('temp.jpg', 'r') as f:
             proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             ret = proc.communicate()[0]
             proc.wait()
