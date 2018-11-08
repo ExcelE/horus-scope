@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
-import bcrypt
+import bcrypt, base64
 import numpy
 import tensorflow as tf
 import requests
@@ -92,21 +92,25 @@ def appendWiki(name, prob):
     key = name.split(', ')
     
     retDict = {
-        "prob": prob
+        "score": prob,
+        "description": key[0]
     }
 
-    for item in key:
-        page_py = wiki_wiki.page(item)
-        if page_py.exists():
-            retDict[item] = page_py.fullurl
-        else: 
-            retDict[item] = ""
+    page_py = wiki_wiki.page(key[0])
+    if page_py.exists():
+        retDict["wikipediaURL"] = page_py.fullurl
+        retDict["summary"] = page_py.summary
+    else: 
+        return None
 
     return retDict
 
 class Classify(Resource):
     def post(self):
-        photo = request.files['photo']
+        photo = request.get_json()[0]
+        starter = photo.find(',')
+        image_data = photo[starter+1:]
+        image_data = bytes(image_data, encoding="ascii")
         # username = postedData["username"]
         # password = postedData["password"]
 
@@ -121,19 +125,20 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        photo.save('./temp.jpg')
+        r = base64.decodebytes(image_data)
         retJson = {}
-        
-        proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        ret = proc.communicate()[0]
-        proc.wait()
-        with open("text.txt") as f:
-            retJson = json.load(f)
-            keyLinks = {}
-            for key in retJson:
-                if retJson[key] > 0.001:
-                    keyLinks[key] = appendWiki(key, retJson[key])
-            retJson = keyLinks
+        with open('temp.jpg', 'wb') as f:
+            f.write(r)
+            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            ret = proc.communicate()[0]
+            proc.wait()
+            with open("text.txt") as g:
+                loaded = json.load(g)
+                keyLinks = []
+                for key in loaded:
+                    if loaded[key] > 0.001:
+                        keyLinks.append(appendWiki(key, loaded[key]))
+                retJson["data"] = (keyLinks)
 
         # users.update({
         #     "Username": username
