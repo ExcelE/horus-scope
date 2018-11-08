@@ -5,7 +5,8 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 
 
 ### Running the project
-1) Clone repo
+1) Clone repo  
+2) Install dependencies: ```pip install -r requirements.txt```  
 2) ```cd web```  
 3) ```python app.py```  
 
