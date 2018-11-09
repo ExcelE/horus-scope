@@ -98,7 +98,7 @@ def appendWiki(name, prob):
 
     page_py = wiki_wiki.page(key[0])
     if page_py.exists():
-        retDict["wikipediaURL"] = page_py.fullurl
+        retDict["wikipediaUrl"] = page_py.fullurl
         retDict["summary"] = page_py.summary
     else: 
         return None
@@ -134,7 +134,8 @@ class Classify(Resource):
         # if tokens<=0:
         #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        retJson = {}
+        # retJson = {}
+        retArray = []
         with open('temp.jpg', 'r') as f:
             proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             ret = proc.communicate()[0]
@@ -144,8 +145,9 @@ class Classify(Resource):
                 keyLinks = []
                 for key in loaded:
                     if loaded[key] > 0.001:
-                        keyLinks.append(appendWiki(key, loaded[key]))
-                retJson["data"] = (keyLinks)
+                        retArray.append(appendWiki(key, loaded[key]))
+                        # keyLinks.append(appendWiki(key, loaded[key]))
+                # retJson["data"] = (keyLinks)
 
         # users.update({
         #     "Username": username
@@ -155,9 +157,9 @@ class Classify(Resource):
         #     }
         # })
 
-        retJson["status"] = 200
-
-        return retJson
+        # retJson["status"] = 200
+        return jsonify(retArray)
+        # return retJson
 
 
 class Refill(Resource):
@@ -190,4 +192,4 @@ api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
