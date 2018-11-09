@@ -6,6 +6,13 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 
 ### Running the project
 1) Clone repo  
+2) Create and activate virtual environment
+> ```pip3 install virtualenv```
+> ```virtualenv venv```
+>> [Windows] ```.\venv\Scripts\activate```
+>> [Linux] ```source venv/bin/activate```
+
+
 2) Install dependencies: ```pip3 install -r requirements.txt```  
 2) ```cd web```  
 3) ```python app.py```  
