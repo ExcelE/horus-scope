@@ -93,65 +93,69 @@ def appendWiki(name, prob):
     key = name.split(', ')
     
     retDict = {
-        "prob": prob
+        "score": prob,
+        "description": key[0]
     }
 
-    for item in key:
-        page_py = wiki_wiki.page(item)
-        if page_py.exists():
-            retDict[item] = page_py.fullurl
-        else: 
-            retDict[item] = ""
+    page_py = wiki_wiki.page(key[0])
+    if page_py.exists():
+        retDict["wikipediaUrl"] = page_py.fullurl
+        retDict["summary"] = page_py.summary
+    else: 
+        return None
 
     return retDict
 
 class Classify(Resource):
     def post(self):
-        photo = request.get_json()[0]
-        # username = postedData["username"]
-        # password = postedData["password"]
+        try:
+            photo = request.get_json()[0]
+            starter = photo.find(',')
+            image_data = photo[starter+1:]
+            image_data = bytes(image_data, encoding="ascii")
+            r = base64.decodebytes(image_data)
+            with open('temp.jpg', 'wb') as f:
+                f.write(r)
 
-        # retJson, error = verifyCredentials(username, password)
-        # if error:
-        #     return jsonify(retJson)
+        except:
+            photo = request.files['photo']
+            r = photo.save('temp.jpg')
 
-        # tokens = users.find({
-        #     "Username":username
-        # })[0]["Tokens"]
+        username = postedData["username"]
+        password = postedData["password"]
 
-        # if tokens<=0:
-        #     return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+        retJson, error = verifyCredentials(username, password)
+        if error:
+            return jsonify(retJson)
 
-        starter = photo.find(',')
-        image_data = photo[starter+1:]
-        with open("temp.jpg", "wb") as fh:
-            fh.write(base64.decodebytes(image_data.encode()))
+        tokens = users.find({
+            "Username":username
+        })[0]["Tokens"]
 
-        retJson = {}
-        
-        proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        ret = proc.communicate()[0]
-        proc.wait()
-        with open("text.txt") as f:
-            retJson = json.load(f)
-            keyLinks = {}
-            for key in retJson:
-                if retJson[key] > 0.001:
-                    keyLinks[key] = appendWiki(key, retJson[key])
-            retJson = keyLinks
+        if tokens<=0:
+            return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
-        # users.update({
-        #     "Username": username
-        # },{
-        #     "$set":{
-        #         "Tokens": tokens-1
-        #     }
-        # })
+        retArray = []
+        with open('temp.jpg', 'r') as f:
+            proc = subprocess.Popen('python classify_image.py --model_dir=. --image_file=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            ret = proc.communicate()[0]
+            proc.wait()
+            with open("text.txt") as g:
+                loaded = json.load(g)
+                keyLinks = []
+                for key in loaded:
+                    if loaded[key] > 0.001:
+                        retArray.append(appendWiki(key, loaded[key]))
 
-        retJson["status"] = 200
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": tokens-1
+            }
+        })
 
-        return retJson
-
+        return jsonify(retArray)
 
 class Refill(Resource):
     def post(self):
