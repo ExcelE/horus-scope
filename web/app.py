@@ -44,7 +44,7 @@ class Register(Resource):
         users.insert({
             "Username": username,
             "Password": hashed_pw,
-            "Tokens":10
+            "Tokens": 10
         })
 
         retJson = {
@@ -108,18 +108,22 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        try:
-            photo = request.get_json()[0]
-            starter = photo.find(',')
-            image_data = photo[starter+1:]
-            image_data = bytes(image_data, encoding="ascii")
-            r = base64.decodebytes(image_data)
-            with open('temp.jpg', 'wb') as f:
-                f.write(r)
+        # try:
+        #     photo = request.get_json()[0]
+        #     starter = photo.find(',')
+        #     image_data = photo[starter+1:]
+        #     image_data = bytes(image_data, encoding="ascii")
+        #     r = base64.decodebytes(image_data)
+        #     with open('temp.jpg', 'wb') as f:
+        #         f.write(r)
+        #     print("Saved base64 to jpg")
 
-        except:
-            photo = request.files['photo']
-            r = photo.save('temp.jpg')
+        # except:
+        postedData = request.get_json()
+
+        photo = request.files['photo']
+        r = photo.save('temp.jpg')
+        print("Saved image payload to jpg")
 
         username = postedData["username"]
         password = postedData["password"]
