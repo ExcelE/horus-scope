@@ -113,6 +113,12 @@ class Classify(Resource):
         photo = request.files['photo']
         r = photo.save('temp.jpg')
         print("Saved image payload to jpg")
+        
+        if (not postedData["username"] or not postedData["password"]):
+            return jsonify({
+                "error": "Please supply both username and password",
+                "status": 300
+                })
 
         username = postedData["username"]
         password = postedData["password"]
