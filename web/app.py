@@ -7,7 +7,7 @@ import numpy
 import tensorflow as tf
 import requests
 import subprocess
-import json, wikipediaapi
+import json, wikipediaapi, sys
 
 app = Flask(__name__)
 api = Api(app)
@@ -112,47 +112,48 @@ class Classify(Resource):
 
         photo = request.files['photo']
         r = photo.save('temp.jpg')
-        print("Saved image payload to jpg")
+        print("Saved image payload to jpg", file=sys.stderr)
         
-        try:
-            username = postedData["username"]
-            password = postedData["password"]
-        except:
-            return jsonify({
-                "error": "Please supply both username and password",
-                "status": 300
-                })
+        #try:
+        #    username = postedData["username"]
+        #    password = postedData["password"]
+        #except:
+        #    return jsonify({
+        #        "error": "Please supply both username and password",
+        #        "status": 300
+        #        })
 
-        retJson, error = verifyCredentials(username, password)
-        if error:
-            return jsonify(retJson)
+        #retJson, error = verifyCredentials(username, password)
+        #if error:
+        #    return jsonify(retJson)
 
-        tokens = users.find({
-            "Username":username
-        })[0]["Tokens"]
+        #tokens = users.find({
+        #    "Username":username
+        #})[0]["Tokens"]
 
-        if tokens<=0:
-            return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+        #if tokens<=0:
+        #    return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
 
         retArray = []
         with open('temp.jpg', 'r') as f:
-            proc = subprocess.Popen('python3 classifier/label_image.py --image=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            proc = subprocess.Popen('python3 label_image.py --image temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             ret = proc.communicate()[0]
             proc.wait()
             with open("text.txt") as g:
                 loaded = json.load(g)
+                print(g, file=sys.stdout)
                 keyLinks = []
                 for key in loaded:
                     if loaded[key] > 0.001:
                         retArray.append(appendWiki(key, loaded[key]))
 
-        users.update({
-            "Username": username
-        },{
-            "$set":{
-                "Tokens": tokens-1
-            }
-        })
+        #users.update({
+        #    "Username": username
+        #},{
+        #    "$set":{
+        #        "Tokens": tokens-1
+        #    }
+        #})
 
         return jsonify(retArray)
 
@@ -186,4 +187,4 @@ api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True, port=9000)
