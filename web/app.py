@@ -22,7 +22,36 @@ def UserExist(username):
     else:
         return True
 
-from auth.register import Register
+class Register(Resource):
+    def post(self):
+        #Step 1 is to get posted data by the user
+        postedData = request.get_json()
+
+        #Get the data
+        username = postedData["username"]
+        password = postedData["password"] #"123xyz"
+
+        if UserExist(username):
+            retJson = {
+                'status':301,
+                'msg': 'Invalid Username'
+            }
+            return jsonify(retJson)
+
+        hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+
+        #Store username and pw into the database
+        users.insert({
+            "Username": username,
+            "Password": hashed_pw,
+            "Tokens": 10
+        })
+
+        retJson = {
+            "status": 200,
+            "msg": "You successfully signed up for the API"
+        }
+        return jsonify(retJson)
 
 def verifyPw(username, password):
     if not UserExist(username):
@@ -77,7 +106,80 @@ def appendWiki(name, prob):
 
     return retDict
 
-from service.classify import Classify, Refill
+class Classify(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        photo = request.files['photo']
+        r = photo.save('temp.jpg')
+        print("Saved image payload to jpg")
+        
+        try:
+            username = postedData["username"]
+            password = postedData["password"]
+        except:
+            return jsonify({
+                "error": "Please supply both username and password",
+                "status": 300
+                })
+
+        retJson, error = verifyCredentials(username, password)
+        if error:
+            return jsonify(retJson)
+
+        tokens = users.find({
+            "Username":username
+        })[0]["Tokens"]
+
+        if tokens<=0:
+            return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+
+        retArray = []
+        with open('temp.jpg', 'r') as f:
+            proc = subprocess.Popen('python3 classifier/label_image.py --image=./temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            ret = proc.communicate()[0]
+            proc.wait()
+            with open("text.txt") as g:
+                loaded = json.load(g)
+                keyLinks = []
+                for key in loaded:
+                    if loaded[key] > 0.001:
+                        retArray.append(appendWiki(key, loaded[key]))
+
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": tokens-1
+            }
+        })
+
+        return jsonify(retArray)
+
+class Refill(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        username = postedData["username"]
+        password = postedData["admin_pw"]
+        amount = postedData["amount"]
+
+        if not UserExist(username):
+            return jsonify(generateReturnDictionary(301, "Invalid Username"))
+
+        correct_pw = "abc123"
+        if not password == correct_pw:
+            return jsonify(generateReturnDictionary(302, "Incorrect Password"))
+
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": amount
+            }
+        })
+        return jsonify(generateReturnDictionary(200, "Refilled"))
+
 
 api.add_resource(Register, '/register')
 api.add_resource(Classify, '/classify')
