@@ -9,7 +9,7 @@ import requests
 import subprocess
 import json, wikipediaapi, sys
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
 
 client = MongoClient("mongodb://db:27017")
@@ -69,7 +69,8 @@ def verifyPw(username, password):
 def generateReturnDictionary(status, msg):
     retJson = {
         "status": status,
-        "msg": msg
+        "msg": msg,
+        "status_code": status
     }
     return retJson
 
@@ -108,32 +109,27 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        postedData = request.get_json()
+        #postedData = request.get_json()
 
         photo = request.files['photo']
         r = photo.save('temp.jpg')
         print("Saved image payload to jpg", file=sys.stderr)
         
-        #try:
-        #    username = postedData["username"]
-        #    password = postedData["password"]
-        #except:
-        #    return jsonify({
-        #        "error": "Please supply both username and password",
-        #        "status": 300
-        #        })
+        username = request.form['username']
+        password = request.form['password']
 
-        #retJson, error = verifyCredentials(username, password)
-        #if error:
-        #    return jsonify(retJson)
+        retJson, error = verifyCredentials(username, password)
+        if error:
+            return retJson, retJson['status']
 
-        #tokens = users.find({
-        #    "Username":username
-        #})[0]["Tokens"]
+        tokens = users.find({
+            "Username":username
+        })[0]["Tokens"]
 
-        #if tokens<=0:
-        #    return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+        if tokens<=0:
+            return generateReturnDictionary(303, "Not Enough Tokens"), 303
 
+        print("User authenticated!", file=sys.stderr)
         retArray = []
         with open('temp.jpg', 'r') as f:
             proc = subprocess.Popen('python3 label_image.py --image temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
@@ -147,15 +143,17 @@ class Classify(Resource):
                     if loaded[key] > 0.001:
                         retArray.append(appendWiki(key, loaded[key]))
 
-        #users.update({
-        #    "Username": username
-        #},{
-        #    "$set":{
-        #        "Tokens": tokens-1
-        #    }
-        #})
+        print("OK: Classified image", file=sys.stderr)
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": tokens-1
+            }
+        })
 
-        return jsonify(retArray)
+        print("OK: Tokens docked!", file=sys.stderr)
+        return retArray, 200
 
 class Refill(Resource):
     def post(self):
@@ -182,9 +180,38 @@ class Refill(Resource):
         return jsonify(generateReturnDictionary(200, "Refilled"))
 
 
+class Login(Resource):
+    def post(self):
+        try:
+            postedData = request.get_json()
+            username = postedData["username"]
+            password = postedData["password"]
+            print("Correct request params", file=sys.stderr)
+        except:
+            response = generateReturnDictionary(300, "Invalid user/pass format.")
+            print("Invalid user/pass", file=sys.stderr)
+            return response, 300
+
+        retJson, err = verifyCredentials(username, password)
+        if err:
+            print("Sending unknown username/pass error", file=sys.stderr)
+            return retJson, retJson['status']
+        
+        print("No errors here", file=sys.stderr)
+        response = generateReturnDictionary(200, "Success")
+        return response, 200
+
+## Serving static files
+@app.route('/<path:path>')
+def serve_page(path):
+    return send_from_directory('static', path)
+
+
+api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
+

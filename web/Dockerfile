@@ -4,5 +4,5 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN ls -la
-RUN python label_image.py --image temp.jpg
+#RUN python label_image.py --image temp.jpg
 CMD [ "python", "app.py" ]
