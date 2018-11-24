@@ -18,3 +18,12 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 3) ```python app.py```  
 
 [Under construction]
+
+### Tips
+
+How to forceably switch branches:
+
+```
+git checkout HEAD^
+git checkout -f master
+```
