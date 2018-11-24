@@ -9,7 +9,7 @@ import requests
 import subprocess
 import json, wikipediaapi, sys
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
 
 client = MongoClient("mongodb://db:27017")
@@ -200,6 +200,12 @@ class Login(Resource):
         print("No errors here", file=sys.stderr)
         response = generateReturnDictionary(200, "Success")
         return response, 200
+
+## Serving static files
+@app.route('/<path:path>')
+def serve_page(path):
+    return send_from_directory('static', path)
+
 
 api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
