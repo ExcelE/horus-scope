@@ -5,13 +5,17 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 
 
 ### Running the project
-1) Clone repo
-2) Make sure you installed Docker and Docker-Compose (Run `sudo sh install_docker_docker-ce.sh` on the machine)
-3) ```cd horus-scope```
-4) ```docker-compose build```
-  a) Add ```sudo``` if on a linux environment
-5) ```docker-compose up```
-6) Congratulations, the API is now up and running
+1) Clone repo  
+2) Create and activate virtual environment
+> ```pip3 install virtualenv```  
+> ```virtualenv venv```
+>> **[Windows]** ```.\venv\Scripts\activate```  
+>> **[Linux]** ```source venv/bin/activate```
+
+
+2) Install dependencies: ```pip3 install -r requirements.txt```  
+2) ```cd web```  
+3) ```python app.py```  
 
 [Under construction]
 
