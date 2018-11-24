@@ -14,3 +14,12 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 6) Congratulations, the API is now up and running
 
 [Under construction]
+
+### Tips
+
+How to forceably switch branches:
+
+```
+git checkout HEAD^
+git checkout -f master
+```

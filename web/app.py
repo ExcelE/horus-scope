@@ -109,32 +109,27 @@ def appendWiki(name, prob):
 
 class Classify(Resource):
     def post(self):
-        postedData = request.get_json()
+        #postedData = request.get_json()
 
         photo = request.files['photo']
         r = photo.save('temp.jpg')
         print("Saved image payload to jpg", file=sys.stderr)
         
-        try:
-            username = postedData["username"]
-            password = postedData["password"]
-        except:
-            return jsonify({
-                "error": "Please supply both username and password",
-                "status": 300
-                }), 300
+        username = request.form['username']
+        password = request.form['password']
 
         retJson, error = verifyCredentials(username, password)
         if error:
-            return jsonify(retJson)
+            return retJson, retJson['status']
 
         tokens = users.find({
             "Username":username
         })[0]["Tokens"]
 
         if tokens<=0:
-            return jsonify(generateReturnDictionary(303, "Not Enough Tokens")), 303
+            return generateReturnDictionary(303, "Not Enough Tokens"), 303
 
+        print("User authenticated!", file=sys.stderr)
         retArray = []
         with open('temp.jpg', 'r') as f:
             proc = subprocess.Popen('python3 label_image.py --image temp.jpg', stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
@@ -148,6 +143,7 @@ class Classify(Resource):
                     if loaded[key] > 0.001:
                         retArray.append(appendWiki(key, loaded[key]))
 
+        print("OK: Classified image", file=sys.stderr)
         users.update({
             "Username": username
         },{
@@ -156,7 +152,8 @@ class Classify(Resource):
             }
         })
 
-        return jsonify(retArray)
+        print("OK: Tokens docked!", file=sys.stderr)
+        return retArray, 200
 
 class Refill(Resource):
     def post(self):
