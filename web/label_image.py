@@ -75,8 +75,8 @@ def load_labels(label_file):
 if __name__ == "__main__":
   file_name = "tensorflow/examples/label_image/data/grace_hopper.jpg"
   model_file = \
-    "classifier/retrained_graph.pb"
-  label_file = "classifier/retrained_labels.txt"
+    "retrained_graph.pb"
+  label_file = "retrained_labels.txt"
   input_height = 299
   input_width = 299
   input_mean = 0

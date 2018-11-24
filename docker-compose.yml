@@ -3,7 +3,7 @@ services:
   web:
     build: ./web
     ports:
-      - "7000:9000"
+      - "6000:5000"
     links:
       - db
   db:

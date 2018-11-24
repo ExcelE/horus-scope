@@ -69,7 +69,8 @@ def verifyPw(username, password):
 def generateReturnDictionary(status, msg):
     retJson = {
         "status": status,
-        "msg": msg
+        "msg": msg,
+        "status_code": status
     }
     return retJson
 
@@ -100,7 +101,7 @@ def appendWiki(name, prob):
     page_py = wiki_wiki.page(key[0])
     if page_py.exists():
         retDict["wikipediaUrl"] = page_py.fullurl
-        retDict["summary"] = page_py.summary
+        retDict["summary"] = page_py.summary[:256]
     else: 
         return None
 
@@ -114,25 +115,25 @@ class Classify(Resource):
         r = photo.save('temp.jpg')
         print("Saved image payload to jpg", file=sys.stderr)
         
-        #try:
-        #    username = postedData["username"]
-        #    password = postedData["password"]
-        #except:
-        #    return jsonify({
-        #        "error": "Please supply both username and password",
-        #        "status": 300
-        #        })
+        try:
+            username = postedData["username"]
+            password = postedData["password"]
+        except:
+            return jsonify({
+                "error": "Please supply both username and password",
+                "status": 300
+                }), 300
 
-        #retJson, error = verifyCredentials(username, password)
-        #if error:
-        #    return jsonify(retJson)
+        retJson, error = verifyCredentials(username, password)
+        if error:
+            return jsonify(retJson)
 
-        #tokens = users.find({
-        #    "Username":username
-        #})[0]["Tokens"]
+        tokens = users.find({
+            "Username":username
+        })[0]["Tokens"]
 
-        #if tokens<=0:
-        #    return jsonify(generateReturnDictionary(303, "Not Enough Tokens"))
+        if tokens<=0:
+            return jsonify(generateReturnDictionary(303, "Not Enough Tokens")), 303
 
         retArray = []
         with open('temp.jpg', 'r') as f:
@@ -147,13 +148,13 @@ class Classify(Resource):
                     if loaded[key] > 0.001:
                         retArray.append(appendWiki(key, loaded[key]))
 
-        #users.update({
-        #    "Username": username
-        #},{
-        #    "$set":{
-        #        "Tokens": tokens-1
-        #    }
-        #})
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": tokens-1
+            }
+        })
 
         return jsonify(retArray)
 
@@ -182,9 +183,31 @@ class Refill(Resource):
         return jsonify(generateReturnDictionary(200, "Refilled"))
 
 
+class Login(Resource):
+    def post(self):
+        try:
+            postedData = request.get_json()
+            username = postedData["username"]
+            password = postedData["password"]
+            print("Correct request params", file=sys.stderr)
+        except:
+            response = generateReturnDictionary(300, "Invalid user/pass format.")
+            print("Invalid user/pass", file=sys.stderr)
+            return response, 300
+
+        retJson, err = verifyCredentials(username, password)
+        if err:
+            print("Sending unknown username/pass error", file=sys.stderr)
+            return retJson, retJson['status']
+        
+        print("No errors here", file=sys.stderr)
+        response = generateReturnDictionary(200, "Success")
+        return response, 200
+
+api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 
 if __name__=="__main__":
-    app.run(host='0.0.0.0', debug=True, port=9000)
+    app.run(host='0.0.0.0')
