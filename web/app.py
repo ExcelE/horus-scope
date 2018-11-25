@@ -25,18 +25,17 @@ def UserExist(username):
 class Register(Resource):
     def post(self):
         #Step 1 is to get posted data by the user
-        postedData = request.get_json()
 
         #Get the data
-        username = postedData["username"]
-        password = postedData["password"] #"123xyz"
+        username = request.form['username']
+        password = request.form['password']
 
         if UserExist(username):
             retJson = {
                 'status':301,
                 'msg': 'Invalid Username'
             }
-            return jsonify(retJson)
+            return retJson, 301
 
         hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 
@@ -51,7 +50,7 @@ class Register(Resource):
             "status": 200,
             "msg": "You successfully signed up for the API"
         }
-        return jsonify(retJson)
+        return retJson, 200
 
 def verifyPw(username, password):
     if not UserExist(username):
@@ -155,38 +154,51 @@ class Classify(Resource):
         print("OK: Tokens docked!", file=sys.stderr)
         return retArray, 200
 
+def getToken(user):
+    if UserExist(user):
+        return users.find({"Username":user})[0]["Tokens"]
+        
+
 class Refill(Resource):
     def post(self):
         
         username = request.form['username']
         password = request.form['password']
-        amount = request.form['amount'] or 3
+        amount = request.form.get('amount', None)
+
+        if amount == None:
+            amount = 3
 
         retJson, error = verifyCredentials(username, password)
         if error:
             return retJson, retJson['status']
 
+        currAmount = getToken(username)
+        newAmount = currAmount + amount
+
         users.update({
             "Username": username
         },{
             "$set":{
-                "Tokens": amount
+                "Tokens": newAmount
             }
         })
 
-        return {
+        respJson = {
             "status": 200,
             "msg": "Refilled",
-            "amount": amount
-        }, 200
+            "requested": amount,
+            "new total": currAmount
+        }
+
+        return respJson, 200
 
 
 class Login(Resource):
     def post(self):
         try:
-            postedData = request.get_json()
-            username = postedData["username"]
-            password = postedData["password"]
+            username = request.form["username"]
+            password = request.form["password"]
             print("Correct request params", file=sys.stderr)
         except:
             response = generateReturnDictionary(300, "Invalid user/pass format.")
