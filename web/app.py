@@ -168,6 +168,8 @@ class Refill(Resource):
 
         if amount == None:
             amount = 3
+        else: 
+            amount = int(amount)
 
         retJson, error = verifyCredentials(username, password)
         if error:
