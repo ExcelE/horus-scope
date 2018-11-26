@@ -8,6 +8,7 @@ import tensorflow as tf
 import requests
 import subprocess
 import json, wikipediaapi, sys
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
@@ -27,8 +28,12 @@ class Register(Resource):
         #Step 1 is to get posted data by the user
 
         #Get the data
-        username = request.form['username']
-        password = request.form['password']
+        print(request, file=sys.stderr)
+        try:
+            username = request.get_json()['username']
+            password = request.get_json()['password']
+        except:
+            return generateReturnDictionary(305, "Please validate body format"), 305
 
         if UserExist(username):
             retJson = {
@@ -39,6 +44,7 @@ class Register(Resource):
 
         hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 
+        print("Password encrypted and stored", file=sys.stderr)
         #Store username and pw into the database
         users.insert({
             "Username": username,
@@ -50,6 +56,7 @@ class Register(Resource):
             "status": 200,
             "msg": "You successfully signed up for the API"
         }
+
         return retJson, 200
 
 def verifyPw(username, password):
@@ -113,7 +120,7 @@ class Classify(Resource):
         photo = request.files['photo']
         r = photo.save('temp.jpg')
         print("Saved image payload to jpg", file=sys.stderr)
-        
+
         username = request.form['username']
         password = request.form['password']
 
@@ -190,7 +197,7 @@ class Refill(Resource):
             "status": 200,
             "msg": "Refilled",
             "requested": amount,
-            "new total": currAmount
+            "new total": newAmount
         }
 
         return respJson, 200

@@ -3,9 +3,14 @@ services:
   web:
     build: ./web
     ports:
-      - "443:5000"
-      - "80:5000"
+      - "6000:5000"
     links:
       - db
   db:
-    build: ./db
+    image: mongo:latest
+    volumes:
+      - "./db:/data/db"
+    ports:
+      - "27017:27017"
+    command: mongod
+ 
