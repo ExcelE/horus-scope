@@ -1,16 +1,28 @@
-version: '3.5'
+version: '3.6'
 
 services:
   db:
-    image: postgres
+    image: postgres:10.1-alpine
     volumes:
-      - ./db:/var/lib/postgresql
+      - data-postgresql:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - DATA-POSTGRESL:/var/lib/postgresql/data
   web:
     build: .
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python /code/manage.py makemigrations
+    command: python /code/manage.py migrate
+    command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - 8000:8000
+    environment:
+      - SECRET_KEY=changemeinprod
     depends_on:
       - db
+
+volumes:
+  data-postgresql:
+    external: true
