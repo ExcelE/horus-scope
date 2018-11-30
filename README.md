@@ -2,10 +2,10 @@
 
 ### Installing part
 
-`(sudo) docker-compose up --build`
+`(sudo) sh build_and_run.sh`
 
 Pruning:  
-> `sudo docker-compose prune`
+> `sudo docker image prune && docker container prune`
 
 Running/modifying docker instance:  
 > `sudo docker-compose web {command}`
