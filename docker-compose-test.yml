@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx_test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/code      
+      - ./src/static_cdn/static_root:/static
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
+
+  db:
+    image: postgres
+    container_name: pg_test
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+
+  web:
+    container_name: django_test
+    build: ./src
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && sh entrypoint.sh"
+    volumes:
+      - ./src:/code
+      - ./src/media:/code/media
+      - ./src/static_cdn/static_root:/src/static_cdn/static_root
+    expose:
+      - 8000
+    environment:
+      - ./config/.env.secret
+      - ./config/.env
+    depends_on:
+      - db
