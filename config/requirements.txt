@@ -5,3 +5,4 @@ pillow
 tensorflow
 sorl-thumbnail
 django-resized
+gunicorn

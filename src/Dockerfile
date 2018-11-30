@@ -4,7 +4,5 @@
  WORKDIR /code
  ADD config/requirements.txt /code/
  RUN pip install -r requirements.txt
- ADD ./src/ /code/
+ ADD . /code/
  ADD config/gunicorn /code/
- RUN ls -l
- RUN pwd

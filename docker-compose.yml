@@ -5,30 +5,34 @@ services:
     image: nginx:latest
     container_name: nginx_01
     ports:
-      - "8000:9000"
+      - "8000:8000"
     volumes:
       - ./src:/code      
-      - ./src/static:/static
+      - ./src/static_cdn/static_root:/static
       - ./config/nginx:/etc/nginx/conf.d
     depends_on:
       - web
+
   db:
     image: postgres
+    container_name: pg_01
     ports:
       - 5432:5432
-    environment:
-      - ./db:/var/lib/postgresql/data
+    volumes:
+      - ./pg:/var/lib/postgresql/data
+
   web:
-    build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput"
-    command: sh start.sh
+    container_name: django_01
+    build: ./src
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && sh entrypoint.sh"
     volumes:
       - ./src:/code
       - ./src/media:/code/media
-      - ./src/static:/code/static
+      - ./src/static_cdn/static_root:/src/static_cdn/static_root
     expose:
       - 8000
     environment:
       - ./config/.env.secret
+      - ./config/.env
     depends_on:
       - db

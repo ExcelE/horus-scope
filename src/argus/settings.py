@@ -25,7 +25,7 @@ SECRET_KEY = '1mnox4xzb(@s(y70&6c9ar909d!)!$f^ghetw!jofq6b^2sr_0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['web']
 
 
 # Application definition
@@ -132,10 +132,7 @@ DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/horuscope.icu/static'
-STATICFILES_DIRS = [
-os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn', 'static_root')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
