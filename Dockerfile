@@ -2,6 +2,9 @@
  ENV PYTHONUNBUFFERED 1
  RUN mkdir /code
  WORKDIR /code
- ADD requirements.txt /code/
+ ADD config/requirements.txt /code/
  RUN pip install -r requirements.txt
- ADD . /code/
+ ADD ./src/ /code/
+ ADD config/gunicorn /code/
+ RUN ls -l
+ RUN pwd

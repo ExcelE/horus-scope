@@ -58,7 +58,7 @@ ROOT_URLCONF = 'argus.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['classifier'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,12 +120,22 @@ USE_L10N = True
 
 USE_TZ = True
 
+# DjangoResized Options
+DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
+DJANGORESIZED_DEFAULT_QUALITY = 90
+DJANGORESIZED_DEFAULT_KEEP_META = True
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
+DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/horuscope.icu/static'
+STATICFILES_DIRS = [
+os.path.join(BASE_DIR, 'static'),
+]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 MEDIA_URL = '/media/'
