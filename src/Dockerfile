@@ -6,4 +6,3 @@
  RUN pip3 install -r requirements.txt
  ADD . /code/
  ADD config/gunicorn /code/
- RUN pip show djangorestframework
