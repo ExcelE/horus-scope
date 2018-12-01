@@ -25,12 +25,13 @@ SECRET_KEY = '1mnox4xzb(@s(y70&6c9ar909d!)!$f^ghetw!jofq6b^2sr_0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['web']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # External
     'sorl.thumbnail',
     
     'django.contrib.admin',
@@ -40,8 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'classifier.apps.ClassifierConfig'
+    # Internal apps
+    'classifier.apps.ClassifierConfig',
+    'rest_framework',
 ]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,10 +91,10 @@ WSGI_APPLICATION = 'argus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
+        'NAME': os.getenv('DATABASE_NAME', 'postgres'),
+        'USER': os.getenv('DATABASE_USER', 'postgres'),
+        'HOST': os.getenv('DATABASE_SERVICE_HOST', 'localhost'),
+        'PORT': os.getenv('DATABASE_SERVICE_PORT', 5432),
     }
 }
 

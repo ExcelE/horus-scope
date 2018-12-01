@@ -5,7 +5,7 @@ from django_resized import ResizedImageField
 
 class Item(models.Model):
     image = ResizedImageField(upload_to='images/')
-    created_at = models.DateTimeField(auto_now_add=True, null=True )
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     user = models.ForeignKey(
         'User',
         on_delete=models.CASCADE,
@@ -24,9 +24,9 @@ class Prediction(models.Model):
 
 class User(models.Model):
     username = models.CharField(max_length=255)
-    name = models.CharField(max_length=100, null=True )
+    name = models.CharField(max_length=100, null=True)
     email = models.EmailField(null=True)
-    password = models.CharField(max_length=255)
+    password = models.CharField(max_length=512)
     tokens = models.IntegerField(default=10)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
