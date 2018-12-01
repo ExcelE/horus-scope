@@ -11,5 +11,5 @@ router.register('user', views.UserView)
 router.register('prediction', views.PredictionView)
 
 urlpatterns = [
-    
+    path('', include(router.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
