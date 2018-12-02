@@ -6,6 +6,5 @@ pillow
 tensorflow
 sorl-thumbnail
 django-resized
-gunicorn
+Gunicorn
 djangorestframework-jwt
-
