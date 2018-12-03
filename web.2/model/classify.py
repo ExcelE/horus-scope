@@ -1,6 +1,7 @@
 from .auth.common import *
 from .engine.label_image import engine
 from time import gmtime, strftime
+import os
 
 def stop(self):
     self.is_alive = False
@@ -25,8 +26,8 @@ class Classify(Resource):
             retArray = []
             
             photoLoc = "temp.jpg"
-            graphLoc = "model/engine/retrained_graph.pb"
-            labelLoc = "model/engine/retrained_labels.txt"
+            graphLoc = os.path.join(os.getcwd(),"model/engine/retrained_graph.pb")
+            labelLoc = os.path.join(os.getcwd(),"model/engine/retrained_labels.txt")
 
             predictions = engine(photoLoc, graphLoc, labelLoc)
 
