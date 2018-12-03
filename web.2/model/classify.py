@@ -12,12 +12,8 @@ class Classify(Resource):
         if 'username' in session:
             photo = request.files['photo']
             r = photo.save('temp.jpg')
-            print("Saved image payload to jpg", file=sys.stderr)
 
             username = escape(session['username'])
-
-            photoSaved = 'storage/{}/{}.jpg'.format(username, strftime("-%j%H%M%S", gmtime())))
-            r = photo.save(photoSaved)
 
             tokens = users.find({
                 "Username":username
