@@ -2,11 +2,11 @@ from flask import Flask, jsonify, request, session, escape
 from flask_restful import Api, Resource
 from pymongo import MongoClient
 import bcrypt, base64
-import numpy as np
+import numpy
 import tensorflow as tf
 import requests
 import subprocess
-import json, wikipediaapi, sys, gridfs 
+import json, wikipediaapi, sys
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__, static_folder='static', static_url_path='')

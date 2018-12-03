@@ -31,6 +31,5 @@ class Register(Resource):
 
         retJson = generateReturnDictionary(200, "Successfully signed up!")
         session['username'] = username
-        retJson.set_cookie('username', username)
 
         return retJson, 200
