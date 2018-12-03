@@ -1,24 +1,20 @@
 from flask import Flask, jsonify, request, session, escape
 from flask_restful import Api, Resource
-# from pymongo import MongoClient
-from flask_pymongo import PyMongo
+from pymongo import MongoClient
 import bcrypt, base64
 import numpy as np
 import tensorflow as tf
 import requests
 import subprocess
-import json, wikipediaapi, sys 
+import json, wikipediaapi, sys, gridfs 
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
 
-app.config["MONGO_URI"] = "mongodb://localhost:27017/argus"
-mongo = PyMongo(app)
-
-# client = MongoClient("mongodb://db:27017")
-# db = client.IRG
-users = mongo.db.users
+client = MongoClient("mongodb://db:27017")
+db = client.IRG
+users = db["Users"]
 
 def UserExist(username):
     if users.find({"Username":username}).count() == 0:
