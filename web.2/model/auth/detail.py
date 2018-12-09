@@ -1,6 +1,6 @@
 from .common import *
 
-class Logout(Resource):
+class Details(Resource):
     def post(self):
         if 'username' in session:
             retJson = {}

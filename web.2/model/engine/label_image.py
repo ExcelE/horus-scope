@@ -20,6 +20,7 @@ from __future__ import print_function
 import argparse, json
 
 import numpy as np
+from numpy import array
 import tensorflow as tf
 
 
@@ -80,8 +81,8 @@ if __name__ == "__main__":
 	input_width = 299
 	input_mean = 0
 	input_std = 255
-	input_layer = "Placeholder"
-	output_layer = "final_result"
+	input_layer = "input"
+	output_layer = "InceptionV3/Predictions/Reshape_1"
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--image", help="image to be processed")
@@ -144,17 +145,19 @@ if __name__ == "__main__":
 	with open("text.txt", 'w') as f:
 		json.dump(retjson, f)
 
-def engine(file_name, model_file, label_file):
-	input_height = 299
-	input_width = 299
+def engine(file_name, model_file, label_file, input_layer, output_layer, input_height = 299, input_width = 299):
 	input_mean = 0
 	input_std = 255
-	input_layer = "Placeholder"
-	output_layer = "final_result"
+	input_layer = input_layer
+	output_layer = output_layer
+
+	image = file_name
+	# image = array(file_name).reshape(1, input_height, input_width, 3)
+	# image = np.expand_dims(file_name, axis=0)
 
 	graph = load_graph(model_file)
 	t = read_tensor_from_image_file(
-			file_name,
+			image,
 			input_height=input_height,
 			input_width=input_width,
 			input_mean=input_mean,

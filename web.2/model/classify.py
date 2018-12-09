@@ -7,6 +7,24 @@ def stop(self):
     self.is_alive = False
     self.process.join()
 
+INCEPTION = {
+    "input": "Placeholder",
+    "output": "final_result",
+    "graph": "model/engine/inceptionv3_cars_graph.pb",
+    "labels": "model/engine/inceptionv3_cars_labels.txt",
+    "width": 299,
+    "height": 299
+}
+
+MOBILENET = {
+    "input": "Placeholder",
+    "output": "final_result",
+    "graph": "model/engine/mobinet_cars_graph.pb",
+    "labels": "model/engine/mobinet_cars_labels.txt",
+    "width": 224,
+    "height": 224
+}
+
 class Classify(Resource):
     def post(self):
         #postedData = request.get_json()
@@ -26,10 +44,12 @@ class Classify(Resource):
             retArray = []
             
             photoLoc = "temp.jpg"
-            graphLoc = os.path.join(os.getcwd(),"model/engine/retrained_graph.pb")
-            labelLoc = os.path.join(os.getcwd(),"model/engine/retrained_labels.txt")
+            graphLoc = os.path.join(os.getcwd(), MOBILENET["graph"])
+            labelLoc = os.path.join(os.getcwd(), MOBILENET["labels"])
 
-            predictions = engine(photoLoc, graphLoc, labelLoc)
+            predictions = engine(photoLoc, graphLoc, labelLoc, 
+                                MOBILENET["input"], MOBILENET["output"],
+                                MOBILENET["height"], MOBILENET["width"])
 
             for key in predictions:
                 if predictions[key] > 0.001:
