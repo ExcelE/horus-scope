@@ -14,6 +14,8 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 
 Install `git lfs` with the following: 
 >`curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash`  
+>`apt-get install git-lfs`  
+>`git lfs install`  
 >`git lfs fetch`  
 
 4) Run `docker-compose up --build`  
