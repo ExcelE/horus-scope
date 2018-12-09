@@ -1,4 +1,7 @@
 # Horus Scope
+
+[![Build Status](https://dev.azure.com/eespina002/eespina002/_apis/build/status/ExcelE.horus-scope?branchName=master)](https://dev.azure.com/eespina002/eespina002/_build/latest?definitionId=1?branchName=master)
+
 ### Making the language barrier a thing of the past.
 Our goal is to enable people who have cameras on their devices to learn more about the world no matter the language, culture or trend.
 We are augmenting exploration through the utilization of Computer Vision and Deep Learning to deliver a seemless experience on your phone, laptop or desktop.
