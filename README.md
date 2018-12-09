@@ -11,10 +11,13 @@ We are augmenting exploration through the utilization of Computer Vision and Dee
 1) Clone repo  
 2) Install docker and docker-compose  
 3) Pull all binary engine files:  
-> Install `git lfs` with the following: `curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash`  
+
+Install `git lfs` with the following: 
+>`curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash`  
 >`git lfs fetch`  
-3) Run `docker-compose up --build`  
-4) Connect to `http://ip:7000/<route>` (or some other port, check the docker-compose.yml)  
+
+4) Run `docker-compose up --build`  
+5) Connect to `http://ip:7000/<route>` (or some other port, check the docker-compose.yml)  
 [Under construction]
 
 ### Tips
