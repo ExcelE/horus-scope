@@ -1,10 +1,24 @@
 version: '3'
 services:
   web:
-    build: ./web
+    container_name: web
+    build: ./web.2
+    restart: on-failure
     ports:
-      - "6000:5000"
-    links:
+      - "7000:5000"
+    expose:
+      - 7000
+    depends_on:
       - db
   db:
-    build: ./db
+    container_name: db
+    image: mongo:latest
+    restart: on-failure
+    # volumes:
+    #   - "./db:/data/db"
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    # command: mongod
+ 
