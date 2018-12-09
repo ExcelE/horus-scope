@@ -13,5 +13,7 @@ variables:
   imageName: 'horus-scope:$(flask.mongo)'
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) .
-  displayName: 'docker build'
+- script: |
+    docker-compose -f docs/docker-compose.yml --project-directory . -p docs up -d
+    docker wait docs_sut_1
+    docker-compose -f docs/docker-compose.yml --project-directory . down
