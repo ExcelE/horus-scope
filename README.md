@@ -17,6 +17,7 @@ Install `git lfs` with the following:
 >`apt-get install git-lfs`  
 >`git lfs install`  
 >`git lfs fetch`  
+>`git lfs pull`  
 
 4) Run `docker-compose up --build`  
 5) Connect to `http://ip:7000/<route>` (or some other port, check the docker-compose.yml)  
