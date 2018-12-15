@@ -28,6 +28,10 @@ app.config['JWT_TOKEN_LOCATION'] = ['cookies', 'headers', 'json']
 # should likely be True
 app.config['JWT_COOKIE_SECURE'] = False
 
+# Disabling cookie expiration, THIS IS A BAD IDEA FOR PROD
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = False
+
 # Set the cookie paths, so that you are only sending your access token
 # cookie to the access endpoints, and only sending your refresh token
 # to the refresh endpoint. Technically this is optional, but it is in
