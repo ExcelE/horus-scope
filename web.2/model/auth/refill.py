@@ -1,37 +1,29 @@
 from .common import *
 
 class Refill(Resource):
+    @jwt_required
     def post(self):
-        if 'username' in session:
-            amount = request.form.get('amount', None)
+        username = get_jwt_identity()
+        amount = request.form['amount'] or 3
 
-            if amount == None:
-                amount = 3
-            else: 
-                amount = int(amount)
+        amount = int(amount)
+        
+        currAmount = getToken(username)
+        newAmount = currAmount + amount
 
-            username = escape(session['username'])
-            
-            currAmount = getToken(username)
-            newAmount = currAmount + amount
-
-            users.update({
-                "Username": username
-            },{
-                "$set":{
-                    "Tokens": newAmount
-                }
-            })
-
-            respJson = {
-                "status": 200,
-                "msg": "Refilled",
-                "requested": amount,
-                "new total": newAmount
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": newAmount
             }
+        })
 
-            return respJson, 200
+        respJson = {
+            "status": 200,
+            "msg": "Refilled",
+            "requested": amount,
+            "new total": newAmount
+        }
 
-        else:
-            resp = generateReturnDictionary(300, "Please log in first!")
-            return resp, 300
+        return respJson, 200
