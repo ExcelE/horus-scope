@@ -26,44 +26,45 @@ MOBILENET = {
 }
 
 class Classify(Resource):
+    @jwt_required
     def post(self):
-        #postedData = request.get_json()
-        if 'username' in session:
-            photo = request.files['photo']
-            r = photo.save('temp.jpg')
+        print("posted", file=sys.stderr)
+        username = get_jwt_identity()
 
-            username = escape(session['username'])
+        photo = request.files['photo']
+        
+        r = photo.save('temp.jpg')
 
-            tokens = users.find({
-                "Username":username
-            })[0]["Tokens"]
+        tokens = users.find({
+            "Username":username
+        })[0]["Tokens"]
 
-            if tokens<=0:
-                return generateReturnDictionary(303, "Not Enough Tokens"), 303
+        if tokens<=0:
+            return generateReturnDictionary(303, "Not Enough Tokens"), 303
 
-            retArray = []
-            
-            photoLoc = "temp.jpg"
-            graphLoc = os.path.join(os.getcwd(), MOBILENET["graph"])
-            labelLoc = os.path.join(os.getcwd(), MOBILENET["labels"])
+        retArray = []
+        
+        photoLoc = "temp.jpg"
+        graphLoc = os.path.join(os.getcwd(), MOBILENET["graph"])
+        labelLoc = os.path.join(os.getcwd(), MOBILENET["labels"])
 
-            predictions = engine(photoLoc, graphLoc, labelLoc, 
-                                MOBILENET["input"], MOBILENET["output"],
-                                MOBILENET["height"], MOBILENET["width"])
+        predictions = engine(photoLoc, graphLoc, labelLoc, 
+                            MOBILENET["input"], MOBILENET["output"],
+                            MOBILENET["height"], MOBILENET["width"])
 
-            for key in predictions:
-                if predictions[key] > 0.001:
-                    retArray.append(appendWiki(key, predictions[key]))
+        for key in predictions:
+            if predictions[key] > 0.001:
+                retArray.append(appendWiki(key, predictions[key]))
 
-            users.update({
-                "Username": username
-            },{
-                "$set":{
-                    "Tokens": tokens-1, 
-                }
-            })
+        users.update({
+            "Username": username
+        },{
+            "$set":{
+                "Tokens": tokens-1, 
+            }
+        })
 
-            return retArray, 200
+        response = jsonify(retArray)
+        response.status_code = 200
 
-        else:
-            return generateReturnDictionary(300, "Please log in first!"), 300
+        return response

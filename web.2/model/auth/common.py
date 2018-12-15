@@ -6,13 +6,43 @@ import numpy
 import tensorflow as tf
 import requests
 import subprocess
-import json, wikipediaapi, sys
+import json, wikipediaapi, sys, os, secrets
 from flask_socketio import SocketIO, emit
+
+# For session management
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    jwt_refresh_token_required, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
+)
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
 
-client = MongoClient("mongodb://db:27017")
+## Configs for token management
+# Configure application to store JWTs in cookies
+app.config['JWT_TOKEN_LOCATION'] = ['cookies', 'headers', 'json']
+
+# Only allow JWT cookies to be sent over https. In production, this
+# should likely be True
+app.config['JWT_COOKIE_SECURE'] = False
+
+# Set the cookie paths, so that you are only sending your access token
+# cookie to the access endpoints, and only sending your refresh token
+# to the refresh endpoint. Technically this is optional, but it is in
+# your best interest to not send additional cookies in the request if
+# they aren't needed.
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/refresh'
+
+# Enable csrf double submit protection. See this for a thorough
+# explanation: http://www.redotheweb.com/2015/11/09/api-security.html
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+
+# Set the secret key to sign the JWTs with
+app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(24)  # Change this!
+
+client = MongoClient("mongodb://db.1:27017")
 db = client.IRG
 users = db["Users"]
 
