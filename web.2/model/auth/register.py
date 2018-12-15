@@ -2,8 +2,12 @@ from .common import *
 
 class Register(Resource):
     def post(self):
-        username = request.form['username']
-        password = request.form['password']
+        try:
+            username = request.form['username']
+            password = request.form['password']
+        except:
+            username = request.get_json()['username']
+            password = request.get_json()['password']
 
         if UserExist(username):
             return generateReturnDictionary(301, "Username not available"), 301

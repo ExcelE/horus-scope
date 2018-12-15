@@ -2,8 +2,12 @@ from .common import *
 
 class Login(Resource):
     def post(self):
-        username = request.form['username']
-        password = request.form['password']
+        try:
+            username = request.form['username']
+            password = request.form['password']
+        except:
+            username = request.get_json()['username']
+            password = request.get_json()['password']
 
         retJson, err = verifyCredentials(username, password)
         if err:
@@ -27,3 +31,12 @@ class Login(Resource):
         set_refresh_cookies(response, refresh_token)
 
         return response
+
+    @jwt_required
+    def get(self):
+        username = get_jwt_identity()
+        tokens_available = getToken(username)
+        return {
+            "msg": "Here's your history",
+            "credits": tokens_available
+        }, 200
