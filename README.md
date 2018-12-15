@@ -45,8 +45,12 @@ API Routes:
     * username
     * password
 * Return:
-    * login: True (success)
-    * access_token
+    * SUCCESS:
+        * >{    
+    "access_token":  "...",  
+    "login": true  
+    }  
+    >
     * error (fail)
 
 `/login`:
@@ -54,14 +58,18 @@ API Routes:
     * username
     * password
 * Return:
-    * login: True (success)
-    * access_token
+    * SUCCESS:
+        * >{    
+    "access_token":  "...",  
+    "login": true  
+    }  
+    >
     * error (fail)
 
 `/classify`:
 * Request Parameters:
     * access_token_cookie
-        * You get this access token when you sign in or register
+        * You get this access token in the **return** when you sign in or register
     * photo
         * Please supply a jpeg or jpg
 * Return:
@@ -77,10 +85,16 @@ API Routes:
 `/refill`:
 * Request Parameters:
     * access_token_cookie
-    * amount (optional)
-        * You can supply a custom amount of tokens to refill. If not specified, will default to 3 tokens
+        * You get this access token when you sign in or register
 * Return:
     * Latest amount of tokens
+        * > {  
+        "status": 200,  
+        "msg": "Refilled",  
+        "requested": 3,  
+        "new_total": 14  
+    }
+    >
     * error (fail)
         * Failure usually means that there was no access token in the parameter and you should log the user in
 
