@@ -27,21 +27,20 @@ class Classify(Resource):
     def post(self):
         username = get_jwt_identity()
 
-        if 'photo' not in request.files:
-            return {"msg": "Please upload a valid jpg in the proper structure."}, 405
+        parser = reqparse.RequestParser()
+        parser.add_argument('photo', required=True, help="Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename", location=['form', 'json'])
+        args = parser.parse_args()
 
         photo = request.files['photo']
 
         if photo and allowed_file(photo.filename):
             checkDir(os.path.join('uploads', username))
             filename = secure_filename(photo.filename)
-            print(filename, file=sys.stderr)
             photoDir = username + "/" + filename
-            print(photoDir, file=sys.stderr)
             photoLoc = os.path.join(app.config['UPLOAD_FOLDER'], photoDir)
             photo.save(photoLoc)
-        # else:
-        #     return {"msg": "Please check that your image follows the guidelines. Must be a valid JPG or JPEG"}, 400
+        else:
+            return {"msg": "Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename"}, 400
 
         tokens = getToken(username)
 
