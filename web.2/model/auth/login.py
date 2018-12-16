@@ -24,7 +24,6 @@ class Login(Resource):
             'access_token': access_token,
             "credits": tokens_available,
             "last_login": last_login
-            # 'refresh_token': refresh_token
             })
 
         response.status_code = 200
