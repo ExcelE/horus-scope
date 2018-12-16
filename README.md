@@ -40,6 +40,11 @@ git checkout -f <branch>
 
 API Routes:
 
+`/uploads`:
+* (GET) No Auth required:
+    * If supplied with the proper path of image, it will return the image
+    * Ex: `http://site.link/uploads/user1/image.jpg`
+
 `/register`:  
 * Request Parameters:
     * username
@@ -54,7 +59,7 @@ API Routes:
     * error (fail)
 
 `/login`:
-* Request Parameters:
+* (POST) Request Parameters:
     * username
     * password
 * Return:
@@ -65,6 +70,14 @@ API Routes:
     }  
     >
     * error (fail)
+
+* (GET) After signing in:
+    * Returns:
+        * the amount of credits remaining
+        * the predictions 
+        * relative path of image
+            * To retrieve the image, append to `http://site.link/uploads`
+            
 
 `/classify`:
 * Request Parameters:

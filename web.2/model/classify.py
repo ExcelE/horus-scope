@@ -1,11 +1,7 @@
 from .auth.common import *
 from .engine.label_image import engine
 from time import gmtime, strftime
-import os
-
-def stop(self):
-    self.is_alive = False
-    self.process.join()
+import os, base64
 
 INCEPTION = {
     "input": "Placeholder",
@@ -31,24 +27,30 @@ class Classify(Resource):
         print("posted", file=sys.stderr)
         username = get_jwt_identity()
 
-        photo = request.files['photo']
+        if 'photo' not in request.files:
+            return {"msg": "Please upload a valid jpg in the proper structure."}, 405
         
-        r = photo.save('temp.jpg')
+        photo = request.files['photo']
 
-        tokens = users.find({
-            "Username":username
-        })[0]["Tokens"]
+        if photo and allowed_file(photo.filename):
+            checkDir(os.path.join('uploads', username))
+            filename = secure_filename(photo.filename)
+            photoDir = username + "/" + filename
+            photoLoc = photo.save(os.path.join(app.config['UPLOAD_FOLDER'], photoDir))
 
-        if tokens<=0:
+        tokens = getToken(username)
+
+        if (tokens <= 0):
             return generateReturnDictionary(303, "Not Enough Tokens"), 303
-
+        
         retArray = []
         
-        photoLoc = "temp.jpg"
         graphLoc = os.path.join(os.getcwd(), MOBILENET["graph"])
         labelLoc = os.path.join(os.getcwd(), MOBILENET["labels"])
 
-        predictions = engine(photoLoc, graphLoc, labelLoc, 
+        photoLocation = os.path.join("uploads", photoDir)
+
+        predictions = engine(photoLocation, graphLoc, labelLoc, 
                             MOBILENET["input"], MOBILENET["output"],
                             MOBILENET["height"], MOBILENET["width"])
 
@@ -62,6 +64,12 @@ class Classify(Resource):
             "$set":{
                 "Tokens": tokens-1, 
             }
+        })
+
+        predictions_db.insert({
+            "Username": username,
+            "ImageURL": photoDir,
+            "Predictions": retArray
         })
 
         response = jsonify(retArray)

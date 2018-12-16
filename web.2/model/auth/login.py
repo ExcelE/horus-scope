@@ -2,12 +2,8 @@ from .common import *
 
 class Login(Resource):
     def post(self):
-        try:
-            username = request.form['username']
-            password = request.form['password']
-        except:
-            username = request.get_json()['username']
-            password = request.get_json()['password']
+        
+        username, password = extractUserPass(request)
 
         retJson, err = verifyCredentials(username, password)
         if err:
@@ -36,7 +32,8 @@ class Login(Resource):
     def get(self):
         username = get_jwt_identity()
         tokens_available = getToken(username)
+        history = returnAll(username)
         return {
-            "msg": "Here's your history",
+            "msg": history,
             "credits": tokens_available
         }, 200

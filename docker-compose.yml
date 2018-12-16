@@ -4,6 +4,8 @@ services:
     container_name: web
     build: ./web.2
     restart: on-failure
+    volumes:
+      - "./uploads:/usr/src/app/uploads"
     ports:
       - "7000:5000"
     expose:

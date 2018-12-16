@@ -5,9 +5,13 @@ from model.auth.refill import Refill
 from model.classify import Classify
 from model.auth.common import *
 from model.auth.refresh import Refresh
+from model.auth.uploads import Uploads
 
 # Do not use in Production
 app.secret_key = secrets.token_urlsafe(24)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+checkDir(app.config['UPLOAD_FOLDER'])
 
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
@@ -15,6 +19,7 @@ api.add_resource(Register, '/register')
 api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 api.add_resource(Refresh, '/refresh')
+api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)
 

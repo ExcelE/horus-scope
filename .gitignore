@@ -2,6 +2,7 @@
 *.jpg
 *.pbtxt
 *.tgz
+uploads/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

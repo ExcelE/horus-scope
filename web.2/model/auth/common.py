@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, session, escape
-from flask_restful import Api, Resource
-from pymongo import MongoClient
+from flask_restful import Api, Resource, reqparse
+from flask_pymongo import PyMongo, MongoClient
 import bcrypt, base64
 import numpy
 import tensorflow as tf
@@ -8,6 +8,9 @@ import requests
 import subprocess
 import json, wikipediaapi, sys, os, secrets
 from flask_socketio import SocketIO, emit
+from bson.json_util import loads, dumps
+
+from werkzeug.utils import secure_filename
 
 # For session management
 from flask_jwt_extended import (
@@ -16,6 +19,11 @@ from flask_jwt_extended import (
     get_jwt_identity, set_access_cookies,
     set_refresh_cookies, unset_jwt_cookies
 )
+
+# For uploads
+CURRENT_DIR = os.getcwd()
+UPLOAD_FOLDER = os.path.join(CURRENT_DIR, 'uploads')
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 api = Api(app)
@@ -46,9 +54,48 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 # Set the secret key to sign the JWTs with
 app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(24)  # Change this!
 
+# client = connect(host='db.1', port=27017)
+
 client = MongoClient("mongodb://db.1:27017")
 db = client.IRG
 users = db["Users"]
+predictions_db = db["Predictions"]
+# fs = GridFS(db)
+
+
+def abort_if_image_doesnt_exist(username, imagename):
+    if UserExist(username):
+        cursor = predictions_db.find({"Username":username})
+        all_data = dumps(list(cursor))
+
+        if imagename not in all_data:
+            abort(404, message="Todo {} doesn't exist".format(todo_id))
+
+        
+
+    abort(401, message="Need to sign in first!")
+
+def checkDir(username):
+	try:
+		os.mkdir(username)
+	except FileExistsError:
+		pass
+
+def uniqueString(absLength=None):
+	min_char = 8
+	max_char = 12
+	allchar = string.ascii_letters + string.digits
+	return "".join(choice(allchar) for x in range(randint(absLength or min_char, absLength or max_char)))
+
+def extractUserPass(req):
+    try:
+        username = req.form['username']
+        password = req.form['password']
+    except:
+        username = req.get_json()['username']
+        password = req.get_json()['password']
+
+    return username, password
 
 def UserExist(username):
     if users.find({"Username":username}).count() == 0:
@@ -113,3 +160,19 @@ def appendWiki(name, prob):
 def getToken(user):
     if UserExist(user):
         return users.find({"Username":user})[0]["Tokens"]
+
+def returnAll(username):
+    if UserExist(username):
+        cursor = predictions_db.find({"Username":username}, { "_id": 0, "ImageURL": 1, "Predictions": 1})
+        # newCursor = dumps(cursor)
+        # finalReturn = []
+        # for doc in cursor:
+        #     sample['ImageUrl'] = doc.ImageURL
+        #     sample['Predictions'] = doc.Predictions
+        #     finalReturn.append(sample)
+
+        return dumps(cursor)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
