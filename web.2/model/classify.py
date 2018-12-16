@@ -86,7 +86,7 @@ class Classify(Resource):
                 "width": width,
                 "size": size,
                 "userFileUri": userFileUri
-            },
+            }
 
         newId = predictions_db.insert({
             "Username": username,
