@@ -30,7 +30,7 @@ api = Api(app)
 
 ## Configs for token management
 # Configure application to store JWTs in cookies
-app.config['JWT_TOKEN_LOCATION'] = ['cookies', 'headers', 'json']
+app.config['JWT_TOKEN_LOCATION'] = ['json', 'cookies', 'headers']
 
 # Only allow JWT cookies to be sent over https. In production, this
 # should likely be True
@@ -163,14 +163,7 @@ def getToken(user):
 
 def returnAll(username):
     if UserExist(username):
-        cursor = predictions_db.find({"Username":username}, { "_id": 0, "ImageURL": 1, "Predictions": 1})
-        # newCursor = dumps(cursor)
-        # finalReturn = []
-        # for doc in cursor:
-        #     sample['ImageUrl'] = doc.ImageURL
-        #     sample['Predictions'] = doc.Predictions
-        #     finalReturn.append(sample)
-
+        cursor = predictions_db.find({"Username":username}, { "_id": 0, "imageURL": 1, "predictions": 1})
         return dumps(cursor)
 
 def allowed_file(filename):

@@ -68,15 +68,15 @@ class Classify(Resource):
 
         predictions_db.insert({
             "Username": username,
-            "ImageURL": photoDir,
-            "Predictions": retArray,
-            "DateCreated": datetime.now()
+            "imageURL": photoDir,
+            "predictions": retArray,
+            "dateCreated": datetime.now()
         })
 
         retJson = {}
 
-        retJson['ImageURL'] = photoDir
-        retJson['Prediction'] = retArray
+        retJson['imageURL'] = photoDir
+        retJson['prediction'] = retArray
 
         response = jsonify(retJson)
         response.status_code = 200

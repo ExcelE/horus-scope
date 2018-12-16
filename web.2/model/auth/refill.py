@@ -4,7 +4,6 @@ class Refill(Resource):
     @jwt_required
     def post(self):
         username = get_jwt_identity()
-        # amount = request.form['amount'] or request.get_json()['amount'] or 3
 
         amount = 3
         
