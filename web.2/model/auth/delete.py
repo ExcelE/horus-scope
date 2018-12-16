@@ -19,4 +19,4 @@ class Delete(Resource):
             )   
             return {"msg": "Removal success!"}, 200 
         else:
-            return {"msg": "Removal failed. Item doesn't exist."}, 404
+            return {"msg": "Removal failed. Item doesn't exist."}, 400
