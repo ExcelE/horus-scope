@@ -3,6 +3,7 @@ from .engine.label_image import engine
 from time import gmtime, strftime
 import os, base64
 from datetime import datetime
+from PIL import Image
 
 INCEPTION = {
     "input": "Placeholder",
@@ -29,14 +30,15 @@ class Classify(Resource):
 
         if 'photo' not in request.files:
             return {"msg": "Please upload a valid jpg in the proper structure."}, 405
-        
+
         photo = request.files['photo']
 
         if photo and allowed_file(photo.filename):
             checkDir(os.path.join('uploads', username))
             filename = secure_filename(photo.filename)
             photoDir = username + "/" + filename
-            photoLoc = photo.save(os.path.join(app.config['UPLOAD_FOLDER'], photoDir))
+            photoLoc = os.path.join(app.config['UPLOAD_FOLDER'], photoDir)
+            photo.save(photoLoc)
 
         tokens = getToken(username)
 
@@ -66,18 +68,31 @@ class Classify(Resource):
             }
         })
 
-        newPhotoDir = os.path.join("uploads", photoDir)
+
+        with Image.open(photoLoc) as img:
+            width, height = img.size
+        size = (os.path.getsize(photoLoc) >> 10)
 
         predictions_db.insert({
             "Username": username,
-            "imageURL": newPhotoDir,
+            "image": {
+                "url": photoLocation,
+                "height": height,
+                "width": width,
+                "size": size
+            },
             "predictions": retArray,
             "dateCreated": datetime.utcnow()
         })
 
         retJson = {}
 
-        retJson['imageURL'] = newPhotoDir
+        retJson['image'] = {
+                "url": photoLocation,
+                "height": height,
+                "width": width,
+                "size": size
+            }
         retJson['prediction'] = retArray
 
         response = jsonify(retJson)

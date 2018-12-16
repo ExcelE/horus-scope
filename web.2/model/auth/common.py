@@ -171,7 +171,7 @@ def returnAll(username):
     import json, datetime
 
     if UserExist(username):
-        cursor = predictions_db.find({"Username":username}, { "_id": 1, "imageURL": 1, "predictions": 1, "dateCreated": 1}).limit(20)
+        cursor = predictions_db.find({"Username":username}, { "_id": 1, "image": 1, "predictions": 1, "dateCreated": 1}).limit(20)
         returnJson = json.loads(json_util.dumps(cursor))
 
         for item in returnJson:

@@ -1,3 +1,4 @@
+pillow
 absl-py==0.6.1
 aniso8601==4.0.1
 astor==0.7.1
