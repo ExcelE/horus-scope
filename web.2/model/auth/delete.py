@@ -1,6 +1,6 @@
 from .common import *
 from flask_restful import reqparse
-from bson import ObjectId
+from bson import ObjectId, objectid
 
 class Delete(Resource):
     @jwt_required
@@ -13,10 +13,11 @@ class Delete(Resource):
 
         idToRemove = str(args['id'])
 
-        if (predictions_db.find({ "_id": ObjectId(idToRemove) }).count() > 0):
-            predictions_db.remove(
-                { "_id": ObjectId(idToRemove) }
-            )   
-            return {"msg": "Removal success!"}, 200 
-        else:
-            return {"msg": "Removal failed. Item doesn't exist."}, 400
+        if (objectid.ObjectId.is_valid(idToRemove)):
+            if (predictions_db.find({ "_id": ObjectId(idToRemove) }).count() > 0):
+                predictions_db.remove(
+                    { "_id": ObjectId(idToRemove) }
+                )   
+                return {"msg": "Removal success!"}, 200 
+
+        return {"msg": "Removal failed. Item doesn't exist."}, 400
