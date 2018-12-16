@@ -14,7 +14,7 @@ class Delete(Resource):
         idToRemove = str(args['id'])
 
         if (objectid.ObjectId.is_valid(idToRemove)):
-            if (predictions_db.find({ "_id": ObjectId(idToRemove) }).count() > 0):
+            if (predictions_db.find({"_id": ObjectId(idToRemove)}, {"Username": username}).count() > 0):
                 predictions_db.remove(
                     { "_id": ObjectId(idToRemove) }
                 )   
