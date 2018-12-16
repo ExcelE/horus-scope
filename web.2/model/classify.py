@@ -35,9 +35,13 @@ class Classify(Resource):
         if photo and allowed_file(photo.filename):
             checkDir(os.path.join('uploads', username))
             filename = secure_filename(photo.filename)
+            print(filename, file=sys.stderr)
             photoDir = username + "/" + filename
+            print(photoDir, file=sys.stderr)
             photoLoc = os.path.join(app.config['UPLOAD_FOLDER'], photoDir)
             photo.save(photoLoc)
+        # else:
+        #     return {"msg": "Please check that your image follows the guidelines. Must be a valid JPG or JPEG"}, 400
 
         tokens = getToken(username)
 
@@ -92,6 +96,7 @@ class Classify(Resource):
                 "width": width,
                 "size": size
             }
+            
         retJson['prediction'] = retArray
 
         response = jsonify(retJson)

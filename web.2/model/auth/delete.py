@@ -14,8 +14,10 @@ class Delete(Resource):
         idToRemove = str(args['id'])
 
         if (objectid.ObjectId.is_valid(idToRemove)):
+            
             # Make sure the right user is deleting the prediction
             target = predictions_db.find_one({"_id": ObjectId(idToRemove)})
+
             if (target is not None and target['Username'] == username):
                 predictions_db.remove(
                     { "_id": ObjectId(idToRemove) }
