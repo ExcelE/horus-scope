@@ -3,12 +3,7 @@ from .common import *
 class Register(Resource):
     def post(self):
 
-        # parser = reqparse.RequestParser()
-        # parser.add_argument('username', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
-        # parser.add_argument('password', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
-        # args = parser.parse_args()
-
-        username, password = extractUserPass(request)
+        username, password = extractUserPass(self)
 
         if UserExist(username):
             return generateReturnDictionary(301, "Username not available"), 301

@@ -25,10 +25,23 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)
 
-@socketio.on('my broadcast event', namespace='/ws')
-def test_message(message):
-    emit('Response', {'data': message['data']}, broadcast=True)
+from flask_sockets import Sockets
+sockets = Sockets(app)
+
+@sockets.route('/ws')
+def echo_socket(ws):
+    while not ws.closed:
+        message = ws.receive()
+        ws.send(message)
+
+@app.route('/')
+def hello():
+    return 'Hello World!'
 
 if __name__=="__main__":
-    # socketio.run(app, debug=True, host='0.0.0.0')
-    app.run(debug=True, host='0.0.0.0')
+    app.debug = True
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
+    # app.run(debug=True, host='0.0.0.0')

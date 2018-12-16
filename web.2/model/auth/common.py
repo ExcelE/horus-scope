@@ -9,7 +9,6 @@ import subprocess
 import json, wikipediaapi, sys, os, secrets
 from flask_socketio import SocketIO, emit
 from bson.json_util import loads, dumps
-from flask_socketio import SocketIO
 from datetime import datetime
 
 from werkzeug.utils import secure_filename
@@ -66,8 +65,6 @@ db = client.IRG
 users = db["Users"]
 predictions_db = db["Predictions"]
 
-socketio = SocketIO(app)
-
 def checkDir(username):
 	try:
 		os.mkdir(username)
@@ -80,13 +77,15 @@ def uniqueString(absLength=None):
 	allchar = string.ascii_letters + string.digits
 	return "".join(choice(allchar) for x in range(randint(absLength or min_char, absLength or max_char)))
 
-def extractUserPass(req):
-    try:
-        username = req.form['username']
-        password = req.form['password']
-    except:
-        username = req.get_json()['username']
-        password = req.get_json()['password']
+def extractUserPass(self):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('username', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
+    parser.add_argument('password', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
+    args = parser.parse_args()
+
+    username = args['username']
+    password = args['password']
 
     return username, password
 
