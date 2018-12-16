@@ -28,10 +28,12 @@ class Classify(Resource):
         username = get_jwt_identity()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('photo', required=True, help="Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename", location=['files', 'form', 'json'])
+        parser.add_argument('photo', required=True, help="Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename", location=['files'])
+        parser.add_argument('userFileUri', help="For mobile devs only.", location=['files', 'form', 'json'])
         args = parser.parse_args()
 
         photo = request.files['photo']
+        userFileUri = args['userFileUri']
 
         print(allowed_file(photo.filename), file=sys.stderr)
         print(secure_filename(photo.filename), file=sys.stderr)
@@ -78,27 +80,24 @@ class Classify(Resource):
             
         size = (os.path.getsize(photoLoc) >> 10)
 
-        newId = predictions_db.insert({
-            "Username": username,
-            "image": {
+        imageProperties = {
                 "url": photoLocation,
                 "height": height,
                 "width": width,
-                "size": size
+                "size": size,
+                "userFileUri": userFileUri
             },
+
+        newId = predictions_db.insert({
+            "Username": username,
+            "image": imageProperties,
             "predictions": retArray,
             "dateCreated": datetime.utcnow()
         })
 
         retJson = {}
 
-        retJson['image'] = {
-                "url": photoLocation,
-                "height": height,
-                "width": width,
-                "size": size
-            }
-            
+        retJson['image'] = imageProperties
         retJson['predictions'] = retArray
         retJson['id'] = str(newId)
 
