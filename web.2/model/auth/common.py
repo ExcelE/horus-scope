@@ -169,7 +169,7 @@ def returnAll(username):
 
     if UserExist(username):
         cursor = predictions_db.find({"Username":username}, { "_id": 0, "imageURL": 1, "predictions": 1})
-        return json_util.dumps(cursor)
+        return json.loads(json_util.dumps(cursor))
 
 def allowed_file(filename):
     return '.' in filename and \
