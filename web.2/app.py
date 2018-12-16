@@ -24,4 +24,5 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 jwt = JWTManager(app)
 
 if __name__=="__main__":
+    socketio.run(app)
     app.run(debug=True, host='0.0.0.0')

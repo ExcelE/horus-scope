@@ -9,6 +9,7 @@ import subprocess
 import json, wikipediaapi, sys, os, secrets
 from flask_socketio import SocketIO, emit
 from bson.json_util import loads, dumps
+from flask_socketio import SocketIO
 
 from werkzeug.utils import secure_filename
 
@@ -63,6 +64,21 @@ client = MongoClient("mongodb://db.1:27017")
 db = client.IRG
 users = db["Users"]
 predictions_db = db["Predictions"]
+
+socketio = SocketIO(app)
+from flask_socketio import Namespace, emit
+
+class MyCustomNamespace(Namespace):
+    def on_connect(self):
+        emit('Online')
+
+    def on_disconnect(self):
+        pass
+
+    def on_my_event(self, data):
+        emit('my_response', data)
+
+socketio.on_namespace(MyCustomNamespace('/ws'))
 
 
 def abort_if_image_doesnt_exist(username, imagename):
