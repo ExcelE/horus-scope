@@ -164,9 +164,12 @@ def getToken(user):
         return users.find({"Username":user})[0]["Tokens"]
 
 def returnAll(username):
+    from bson import json_util 
+    import json 
+
     if UserExist(username):
         cursor = predictions_db.find({"Username":username}, { "_id": 0, "imageURL": 1, "predictions": 1})
-        return dumps(cursor)
+        return json_util.dumps(cursor)
 
 def allowed_file(filename):
     return '.' in filename and \

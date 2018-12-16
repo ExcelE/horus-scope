@@ -13,9 +13,13 @@ class Login(Resource):
         access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
 
+        tokens_available = getToken(username)
+        history = returnAll(username)
+
         response = jsonify({
-            'login': True,
+            'history': history,
             'access_token': access_token,
+            "credits": tokens_available
             # 'refresh_token': refresh_token
             })
 
@@ -32,7 +36,8 @@ class Login(Resource):
         username = get_jwt_identity()
         tokens_available = getToken(username)
         history = returnAll(username)
+
         return {
-            "msg": history,
+            "history": history,
             "credits": tokens_available
         }, 200
