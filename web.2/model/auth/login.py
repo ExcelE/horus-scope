@@ -1,4 +1,5 @@
 from .common import *
+from datetime import datetime
 
 class Login(Resource):
     def post(self):
@@ -16,10 +17,13 @@ class Login(Resource):
         tokens_available = getToken(username)
         history = returnAll(username)
 
+        last_login = users.find_one({"Username": username})["last_login"]
+
         response = jsonify({
             'history': history,
             'access_token': access_token,
-            "credits": tokens_available
+            "credits": tokens_available,
+            "last_login": last_login
             # 'refresh_token': refresh_token
             })
 
@@ -34,10 +38,12 @@ class Login(Resource):
     @jwt_required
     def get(self):
         username = get_jwt_identity()
+        last_login = users.find_one({"Username": username})["last_login"]
         tokens_available = getToken(username)
         history = returnAll(username)
 
         return {
+            "last_login": last_login,
             "history": history,
             "credits": tokens_available
         }, 200

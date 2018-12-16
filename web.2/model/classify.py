@@ -2,7 +2,6 @@ from .auth.common import *
 from .engine.label_image import engine
 from time import gmtime, strftime
 import os, base64
-from datetime import datetime
 from PIL import Image
 
 INCEPTION = {
@@ -68,9 +67,9 @@ class Classify(Resource):
             }
         })
 
-
         with Image.open(photoLoc) as img:
             width, height = img.size
+            
         size = (os.path.getsize(photoLoc) >> 10)
 
         predictions_db.insert({

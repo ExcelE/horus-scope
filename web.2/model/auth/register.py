@@ -18,7 +18,8 @@ class Register(Resource):
         users.insert({
              "Username": username,
              "Password": hashed_pw,
-             "Tokens": initialCredits
+             "Tokens": initialCredits,
+             "last_login": datetime.utcnow()
         })
 
         response = jsonify({

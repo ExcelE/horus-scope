@@ -10,6 +10,7 @@ import json, wikipediaapi, sys, os, secrets
 from flask_socketio import SocketIO, emit
 from bson.json_util import loads, dumps
 from flask_socketio import SocketIO
+from datetime import datetime
 
 from werkzeug.utils import secure_filename
 
@@ -66,19 +67,6 @@ users = db["Users"]
 predictions_db = db["Predictions"]
 
 socketio = SocketIO(app)
-from flask_socketio import Namespace, emit
-
-class MyCustomNamespace(Namespace):
-    def on_connect(self):
-        emit('Online')
-
-    def on_disconnect(self):
-        pass
-
-    def on_my_event(self, data):
-        emit('my_response', data)
-
-socketio.on_namespace(MyCustomNamespace('/ws'))
 
 def checkDir(username):
 	try:
@@ -137,6 +125,14 @@ def verifyCredentials(username, password):
 
     if not correct_pw:
         return generateReturnDictionary(302, "Incorrect Password"), True
+
+    users.update({
+            "Username": username
+        },{
+            "$set":{
+                "last_login": datetime.utcnow()
+            }
+        })
 
     return None, False
 

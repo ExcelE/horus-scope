@@ -25,6 +25,10 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)
 
+@socketio.on('my broadcast event', namespace='/ws')
+def test_message(message):
+    emit('Response', {'data': message['data']}, broadcast=True)
+
 if __name__=="__main__":
-    # socketio.run(app)
+    # socketio.run(app, debug=True, host='0.0.0.0')
     app.run(debug=True, host='0.0.0.0')
