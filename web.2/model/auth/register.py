@@ -3,6 +3,11 @@ from .common import *
 class Register(Resource):
     def post(self):
 
+        # parser = reqparse.RequestParser()
+        # parser.add_argument('username', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
+        # parser.add_argument('password', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
+        # args = parser.parse_args()
+
         username, password = extractUserPass(request)
 
         if UserExist(username):
@@ -18,8 +23,14 @@ class Register(Resource):
         users.insert({
              "Username": username,
              "Password": hashed_pw,
-             "Tokens": initialCredits,
-             "last_login": datetime.utcnow()
+             "Tokens": initialCredits
+        })
+
+        users.update({"Username": username},
+        {
+            "$set": {
+                "last_login": datetime.utcnow()
+            }
         })
 
         response = jsonify({

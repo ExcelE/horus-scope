@@ -23,7 +23,7 @@ class Login(Resource):
             'history': history,
             'access_token': access_token,
             "credits": tokens_available,
-            "last_login": last_login
+            "last_login": "" if last_login is None else last_login
             })
 
         response.status_code = 200
