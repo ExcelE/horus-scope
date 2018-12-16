@@ -66,16 +66,18 @@ class Classify(Resource):
             }
         })
 
+        newPhotoDir = os.path.join("uploads", photoDir)
+
         predictions_db.insert({
             "Username": username,
-            "imageURL": photoDir,
+            "imageURL": newPhotoDir,
             "predictions": retArray,
-            "dateCreated": datetime.now()
+            "dateCreated": datetime.utcnow()
         })
 
         retJson = {}
 
-        retJson['imageURL'] = photoDir
+        retJson['imageURL'] = newPhotoDir
         retJson['prediction'] = retArray
 
         response = jsonify(retJson)

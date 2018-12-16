@@ -8,7 +8,7 @@ class Delete(Resource):
         username = get_jwt_identity()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('id', required=True, help='The parameter id needs to be present!')
+        parser.add_argument('id', required=True, help='The parameter id needs to be present!', location=['args', 'form', 'json'])
         args = parser.parse_args()
 
         idToRemove = str(args['id'])
@@ -19,6 +19,6 @@ class Delete(Resource):
             )   
             return {"msg": "Removal success!"}, 200 
         else:
-            return {"msg": "Removal failed. Item doesn't exist."}, 200
+            return {"msg": "Removal failed. Item doesn't exist."}, 400
 
         

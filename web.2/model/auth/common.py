@@ -168,11 +168,25 @@ def getToken(user):
 
 def returnAll(username):
     from bson import json_util 
-    import json 
+    import json, datetime
 
     if UserExist(username):
-        cursor = predictions_db.find({"Username":username}, { "_id": 1, "imageURL": 1, "predictions": 1})
-        return json.loads(json_util.dumps(cursor))
+        cursor = predictions_db.find({"Username":username}, { "_id": 1, "imageURL": 1, "predictions": 1, "dateCreated": 1}).limit(20)
+        returnJson = json.loads(json_util.dumps(cursor))
+
+        for item in returnJson:
+            for k, v in item.items():
+                # Edit dictionary to return id instead of _id -> $oid
+                if k=="_id":
+                    oldId = item[k]['$oid']
+                    item['id'] = oldId
+                    del item[k]
+                # Edit datetime format to look good
+                if k=="dateCreated":
+                    oldDate = int(item[k]["$date"]) / 1000.0
+                    item[k] = datetime.datetime.fromtimestamp(oldDate).strftime('%Y-%m-%d %H:%M:%S')
+
+        return returnJson
 
 def allowed_file(filename):
     return '.' in filename and \

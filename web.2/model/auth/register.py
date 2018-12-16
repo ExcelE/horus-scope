@@ -13,17 +13,19 @@ class Register(Resource):
         access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
 
+        initialCredits = 10
+
         users.insert({
              "Username": username,
              "Password": hashed_pw,
-             "Tokens":10
+             "Tokens": initialCredits
         })
 
         response = jsonify({
             'login': True,
             'access_token': access_token,
-            # 'refresh_token': refresh_token
-            })
+            'credits': initialCredits
+        })
 
         response.status_code = 200
 
