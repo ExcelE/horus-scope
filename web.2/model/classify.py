@@ -99,7 +99,7 @@ class Classify(Resource):
                 "size": size
             }
             
-        retJson['prediction'] = retArray
+        retJson['predictions'] = retArray
 
         response = jsonify(retJson)
         response.status_code = 200
