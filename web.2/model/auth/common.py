@@ -80,19 +80,6 @@ class MyCustomNamespace(Namespace):
 
 socketio.on_namespace(MyCustomNamespace('/ws'))
 
-
-def abort_if_image_doesnt_exist(username, imagename):
-    if UserExist(username):
-        cursor = predictions_db.find({"Username":username})
-        all_data = dumps(list(cursor))
-
-        if imagename not in all_data:
-            abort(404, message="Todo {} doesn't exist".format(todo_id))
-
-        
-
-    abort(401, message="Need to sign in first!")
-
 def checkDir(username):
 	try:
 		os.mkdir(username)
@@ -184,7 +171,7 @@ def returnAll(username):
     import json 
 
     if UserExist(username):
-        cursor = predictions_db.find({"Username":username}, { "_id": 0, "imageURL": 1, "predictions": 1})
+        cursor = predictions_db.find({"Username":username}, { "_id": 1, "imageURL": 1, "predictions": 1})
         return json.loads(json_util.dumps(cursor))
 
 def allowed_file(filename):

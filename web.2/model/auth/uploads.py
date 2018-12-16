@@ -5,6 +5,5 @@ from flask import send_from_directory
 
 class Uploads(Resource):
     def get(self, filename):
-
         return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename, as_attachment=True)

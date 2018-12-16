@@ -40,6 +40,12 @@ git checkout -f <branch>
 
 API Routes:
 
+`/delete`:
+* (POST) ID:
+    * Needs id to delete a prediction
+* Return:
+    * File deleted
+
 `/uploads`:
 * (GET) No Auth required:
     * If supplied with the proper path of image, it will return the image
