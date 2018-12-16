@@ -13,6 +13,12 @@ class Register(Resource):
         access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
 
+        users.insert({
+             "Username": username,
+             "Password": hashed_pw,
+             "Tokens":10
+        })
+
         response = jsonify({
             'login': True,
             'access_token': access_token,

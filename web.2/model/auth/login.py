@@ -7,7 +7,6 @@ class Login(Resource):
 
         retJson, err = verifyCredentials(username, password)
         if err:
-            print("Sending unknown username/pass error", file=sys.stderr)
             return retJson, retJson['status']
 
          # Create the tokens we will be sending back to the user
