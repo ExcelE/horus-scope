@@ -78,7 +78,7 @@ class Classify(Resource):
             
         size = (os.path.getsize(photoLoc) >> 10)
 
-        predictions_db.insert({
+        newId = predictions_db.insert({
             "Username": username,
             "image": {
                 "url": photoLocation,
@@ -100,6 +100,7 @@ class Classify(Resource):
             }
             
         retJson['predictions'] = retArray
+        retJson['id'] = str(newId)
 
         response = jsonify(retJson)
         response.status_code = 200
