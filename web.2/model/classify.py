@@ -2,6 +2,7 @@ from .auth.common import *
 from .engine.label_image import engine
 from time import gmtime, strftime
 import os, base64
+from datetime import datetime
 
 INCEPTION = {
     "input": "Placeholder",
@@ -24,7 +25,6 @@ MOBILENET = {
 class Classify(Resource):
     @jwt_required
     def post(self):
-        print("posted", file=sys.stderr)
         username = get_jwt_identity()
 
         if 'photo' not in request.files:
@@ -69,10 +69,16 @@ class Classify(Resource):
         predictions_db.insert({
             "Username": username,
             "ImageURL": photoDir,
-            "Predictions": retArray
+            "Predictions": retArray,
+            "DateCreated": datetime.now()
         })
 
-        response = jsonify(retArray)
+        retJson = {}
+
+        retJson['ImageURL'] = photoDir
+        retJson['Prediction'] = retArray
+
+        response = jsonify(retJson)
         response.status_code = 200
 
         return response

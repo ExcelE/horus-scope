@@ -77,10 +77,10 @@ API Routes:
         * the predictions 
         * relative path of image
             * To retrieve the image, append to `http://site.link/uploads`
-            
+
 
 `/classify`:
-* Request Parameters:
+* (POST) Request Parameters:
     * access_token_cookie
         * You get this access token in the **return** when you sign in or register
     * photo
@@ -92,6 +92,8 @@ API Routes:
             * score
             * summary
             * wikipediaUrl
+    * ImageURL: (success)
+        * Relative path for the image 
     * error (fail)
         * Failure usually means that there was no access token in the parameter and you should log the user in
 
