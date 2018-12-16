@@ -63,7 +63,6 @@ client = MongoClient("mongodb://db.1:27017")
 db = client.IRG
 users = db["Users"]
 predictions_db = db["Predictions"]
-# fs = GridFS(db)
 
 
 def abort_if_image_doesnt_exist(username, imagename):
