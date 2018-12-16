@@ -28,10 +28,13 @@ class Classify(Resource):
         username = get_jwt_identity()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('photo', required=True, help="Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename", location=['form', 'json'])
+        parser.add_argument('photo', required=True, help="Needs to end in jpg or jpeg. Or check that there's no offending character(s) in your filename", location=['files', 'form', 'json'])
         args = parser.parse_args()
 
         photo = request.files['photo']
+
+        print(allowed_file(photo.filename), file=sys.stderr)
+        print(secure_filename(photo.filename), file=sys.stderr)
 
         if photo and allowed_file(photo.filename):
             checkDir(os.path.join('uploads', username))
