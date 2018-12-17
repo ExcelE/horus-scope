@@ -78,7 +78,6 @@ def uniqueString(absLength=None):
 	return "".join(choice(allchar) for x in range(randint(absLength or min_char, absLength or max_char)))
 
 def extractUserPass(self):
-
     parser = reqparse.RequestParser()
     parser.add_argument('username', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
     parser.add_argument('password', required=True, help='This parameter needs to be present!', location=['args', 'form', 'json'])
@@ -159,7 +158,7 @@ def appendWiki(name, prob):
 
 def getToken(user):
     if UserExist(user):
-        return users.find({"Username":user})[0]["Tokens"]
+        return users.find({"Username":user})[0]["credits"]
 
 def returnAll(username):
     from bson import json_util 

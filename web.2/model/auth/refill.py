@@ -14,15 +14,14 @@ class Refill(Resource):
             "Username": username
         },{
             "$set":{
-                "Tokens": newAmount
+                "credits": newAmount
             }
         })
 
         respJson = {
             "status": 200,
             "msg": "Refilled",
-            "requested": amount,
-            "new_total": newAmount
+            "credits": newAmount
         }
 
         return respJson, 200

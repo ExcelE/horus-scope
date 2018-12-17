@@ -18,7 +18,7 @@ class Register(Resource):
         users.insert({
              "Username": username,
              "Password": hashed_pw,
-             "Tokens": initialCredits
+             "credits": initialCredits
         })
 
         users.update({"Username": username},

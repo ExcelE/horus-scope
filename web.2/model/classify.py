@@ -50,7 +50,7 @@ class Classify(Resource):
         tokens = getToken(username)
 
         if (tokens <= 0):
-            return generateReturnDictionary(303, "Not Enough Tokens"), 303
+            return generateReturnDictionary(303, "Not Enough credits"), 303
         
         retArray = []
         
@@ -71,7 +71,7 @@ class Classify(Resource):
             "Username": username
         },{
             "$set":{
-                "Tokens": tokens-1, 
+                "credits": tokens-1, 
             }
         })
 

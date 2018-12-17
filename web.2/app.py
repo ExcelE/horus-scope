@@ -7,6 +7,7 @@ from model.auth.common import *
 from model.auth.refresh import Refresh
 from model.auth.uploads import Uploads
 from model.auth.delete import Delete
+from model.auth.profile import Profile
 
 # Do not use in Production
 app.secret_key = secrets.token_urlsafe(24)
@@ -21,6 +22,7 @@ api.add_resource(Classify, '/classify')
 api.add_resource(Refill, '/refill')
 api.add_resource(Refresh, '/refresh')
 api.add_resource(Delete, '/delete')
+api.add_resource(Profile, '/profile')
 api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)

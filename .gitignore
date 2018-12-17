@@ -3,6 +3,7 @@
 *.pbtxt
 *.tgz
 uploads/
+config/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
