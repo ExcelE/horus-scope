@@ -9,6 +9,8 @@ from model.auth.uploads import Uploads
 from model.auth.delete import Delete
 from model.auth.profile import Profile
 
+sys.path.append('../..')
+
 # Do not use in Production
 app.secret_key = secrets.token_urlsafe(24)
 
@@ -27,23 +29,15 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)
 
-from flask_sockets import Sockets
-sockets = Sockets(app)
-
-@sockets.route('/ws')
-def echo_socket(ws):
-    while not ws.closed:
-        message = ws.receive()
-        ws.send(message)
-
-@app.route('/')
-def hello():
-    return 'Hello World!'
+from model.sockets.socket import *
 
 if __name__=="__main__":
-    app.debug = True
+#     app.run(debug=True, host='0.0.0.0', gevent=100)
+    import os
+
+    app.debug = os.environ.get("DEBUG", default = 1)
+
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
     server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
     server.serve_forever()
-    # app.run(debug=True, host='0.0.0.0')

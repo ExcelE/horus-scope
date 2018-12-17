@@ -13,23 +13,37 @@ services:
   #     - ./config/common.env
   #   environment:
   #     - ENV=development
-  #     - APPLICATION_URL=http://web.1
+  #     - APPLICATION_URL=http://web.2
 
-  web.1:
-    container_name: web.1
+  nginx.2:
+    container_name: nginx.2
+    image: webapp-nginx
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - 5000:80
+    depends_on:
+      - web.2
+    volumes:
+      - "./web.2:/usr/src/app"
+      - "./config/deploy:/etc/letsencrypt"
+
+  web.2:
+    container_name: web.2
     build: ./web.2
     restart: on-failure
     volumes:
       - "./uploads:/usr/src/app/uploads"
-    ports:
-      - "7000:5000"
     expose:
-      - 7000
+      - 5000
     depends_on:
-      - db.1
+      - db.2
+    env_file:
+      - ./config/flask.cfg
       
-  db.1:
-    container_name: db.1
+  db.2:
+    container_name: db.2
     image: mongo:latest
     restart: on-failure
     # volumes:

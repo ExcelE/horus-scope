@@ -60,7 +60,9 @@ app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(24)  # Change this!
 
 # client = connect(host='db.1', port=27017)
 
-client = MongoClient("mongodb://db.1:27017")
+DATABASE = os.environ.get("DATABASE_SERVICE_HOST", default="db")
+
+client = MongoClient("mongodb://{db}:27017".format(db=DATABASE))
 db = client.IRG
 users = db["Users"]
 predictions_db = db["Predictions"]

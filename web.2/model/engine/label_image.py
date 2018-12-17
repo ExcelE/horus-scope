@@ -179,9 +179,6 @@ def engine(file_name, model_file, label_file, input_layer, output_layer, input_h
 
 	retjson = {}
 	for i in top_k:
-		print(labels[i], results[i])
 		retjson[labels[i]] = float(results[i])
-
-	with open("text.txt", 'w') as f:
-		json.dump(retjson, f)
+		
 	return retjson
