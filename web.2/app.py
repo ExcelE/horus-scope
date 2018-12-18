@@ -30,24 +30,24 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 jwt = JWTManager(app)
 
 ### SOCKET
-from flask_sockets import Sockets
+from flask_uwsgi_websocket import GeventWebSocket
 
-sockets = Sockets(app)
+websocket = GeventWebSocket(app)
 
-@sockets.route('/ws')
-def echo_socket(ws):
-    while not ws.closed:
-        message = ws.receive()
-        ws.send(message)
+@websocket.route('/ws')
+def echo(ws):
+    while True:
+        msg = ws.receive()
+        ws.send(msg)
 ### END SOCKET
 
 if __name__=="__main__":
     import os
 
-    # app.run(debug=os.environ.get("DEBUG", default = 0),
-    #         host='0.0.0.0', gevent=100)
+    app.run(debug=os.environ.get("DEBUG", default = 0),
+            host='0.0.0.0', gevent=100)
 
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    # from gevent import pywsgi
+    # from geventwebsocket.handler import WebSocketHandler
+    # server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    # server.serve_forever()
