@@ -28,7 +28,6 @@ services:
     volumes:
       - "./web.2:/usr/src/app"
       - "./config/deploy:/etc/letsencrypt"
-      - ./config/nginx.conf:/etc/nginx/nginx.conf
 
   web.2:
     container_name: web.2
