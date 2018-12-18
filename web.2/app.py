@@ -30,15 +30,19 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 jwt = JWTManager(app)
 
 ### SOCKET
-from flask_uwsgi_websocket import GeventWebSocket
+from flask_socketio import Namespace, emit
 
-websocket = GeventWebSocket(app)
+class MyCustomNamespace(Namespace):
+    def on_connect(self):
+        emit('my_response', data)
 
-@websocket.route('/ws')
-def echo(ws):
-    while True:
-        msg = ws.receive()
-        ws.send(msg)
+    def on_disconnect(self):
+        pass
+
+    def on_my_event(self, data):
+        emit('my_response', data)
+
+socketio.on_namespace(MyCustomNamespace('/ws'))
 ### END SOCKET
 
 if __name__=="__main__":
