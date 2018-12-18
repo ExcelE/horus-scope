@@ -15,19 +15,19 @@ services:
   #     - ENV=development
   #     - APPLICATION_URL=http://web.2
 
-  nginx.2:
-    container_name: nginx.2
-    image: webapp-nginx
-    build:
-      context: .
-      dockerfile: nginx.Dockerfile
-    ports:
-      - 80:80
-    depends_on:
-      - web.2
-    volumes:
-      - "./web.2:/usr/src/app"
-      - "./config/deploy:/etc/letsencrypt"
+  # nginx.2:
+  #   container_name: nginx.2
+  #   image: webapp-nginx
+  #   build:
+  #     context: .
+  #     dockerfile: nginx.Dockerfile
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - web.2
+  #   volumes:
+  #     - "./web.2:/usr/src/app"
+  #     - "./config/deploy:/etc/letsencrypt"
 
   web.2:
     container_name: web.2
@@ -35,8 +35,8 @@ services:
     restart: on-failure
     volumes:
       - "./uploads:/usr/src/app/uploads"
-    expose:
-      - 5000
+    ports:
+      - 80:5000
     depends_on:
       - db.2
     env_file:
