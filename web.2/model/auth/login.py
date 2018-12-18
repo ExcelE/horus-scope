@@ -20,10 +20,10 @@ class Login(Resource):
         last_login = users.find_one({"Username": username})["last_login"]
 
         response = jsonify({
+            "last_login": "" if last_login is None else last_login,
             'history': history,
             'access_token': access_token,
-            "credits": tokens_available,
-            "last_login": "" if last_login is None else last_login
+            "credits": tokens_available
             })
 
         response.status_code = 200
@@ -33,16 +33,3 @@ class Login(Resource):
         set_refresh_cookies(response, refresh_token)
 
         return response
-
-    @jwt_required
-    def get(self):
-        username = get_jwt_identity()
-        last_login = users.find_one({"Username": username})["last_login"]
-        tokens_available = getToken(username)
-        history = returnAll(username)
-
-        return {
-            "last_login": last_login,
-            "history": history,
-            "credits": tokens_available
-        }, 200
