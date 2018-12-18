@@ -4,6 +4,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 #RUN python label_image.py --image temp.jpg
-# CMD [ "gunicorn", "-k" ,"flask_sockets.worker", "app:app", "--bind", "0.0.0.0:5000"]
-CMD [ "gunicorn", "-c", "gapp.py", "app:app"]
+CMD [ "gunicorn", "-k" ,"flask_sockets.worker", "app:app", "--bind", "0.0.0.0:5000", "--workers", "4"]
+# CMD [ "gunicorn", "-c", "gapp.py", "app:app"]
 # CMD [ "uwsgi", "--ini", "app.ini" ]
