@@ -34,10 +34,10 @@ from model.sockets.socket import *
 if __name__=="__main__":
     import os
 
-    app.run(debug=os.environ.get("DEBUG", default = 0),
-            host='0.0.0.0', gevent=100)
+    # app.run(debug=os.environ.get("DEBUG", default = 0),
+    #         host='0.0.0.0', gevent=100)
 
-    # from gevent import pywsgi
-    # from geventwebsocket.handler import WebSocketHandler
-    # server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
-    # server.serve_forever()
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
