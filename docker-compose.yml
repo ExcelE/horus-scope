@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: nginx.Dockerfile
     ports:
-      - 5000:80
+      - 80:80
     depends_on:
       - web.2
     volumes:
