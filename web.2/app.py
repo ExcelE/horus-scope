@@ -9,6 +9,11 @@ from model.auth.uploads import Uploads
 from model.auth.delete import Delete
 from model.auth.profile import Profile
 
+# CORS to allow JS apps 
+from flask_cors import CORS
+CORS(app)
+
+# Allows importing with current dir as the root route.
 sys.path.append('../..')
 
 # Do not use in Production
