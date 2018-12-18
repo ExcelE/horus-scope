@@ -31,7 +31,7 @@ api = Api(app)
 
 ## Configs for token management
 # Configure application to store JWTs in cookies
-app.config['JWT_TOKEN_LOCATION'] = ['json', 'cookies', 'headers']
+app.config['JWT_TOKEN_LOCATION'] = ['json', 'cookies', 'headers', 'form']
 
 # Only allow JWT cookies to be sent over https. In production, this
 # should likely be True
