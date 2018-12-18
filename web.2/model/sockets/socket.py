@@ -1,5 +1,7 @@
-from flask_sockets import Sockets
 from model.auth.common import *
+
+from flask_sockets import Sockets
+
 sockets = Sockets(app)
 
 @sockets.route('/ws')

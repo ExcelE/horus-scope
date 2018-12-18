@@ -29,7 +29,17 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 
 jwt = JWTManager(app)
 
-from model.sockets.socket import *
+### SOCKET
+from flask_sockets import Sockets
+
+sockets = Sockets(app)
+
+@sockets.route('/ws')
+def echo_socket(ws):
+    while not ws.closed:
+        message = ws.receive()
+        ws.send(message)
+### END SOCKET
 
 if __name__=="__main__":
     import os
