@@ -30,20 +30,18 @@ api.add_resource(Uploads, '/uploads/<path:filename>')
 jwt = JWTManager(app)
 
 ### SOCKET
-from flask_socketio import Namespace, emit, SocketIO
-socketio = SocketIO(app)
+from flask_sockets import Sockets
+sockets = Sockets(app)
 
-class MyCustomNamespace(Namespace):
-    def on_connect(self):
-        emit('my_response', data)
+@sockets.route('/ws')
+def echo_socket(ws):
+    while not ws.closed:
+        message = ws.receive()
+        ws.send(message)
 
-    def on_disconnect(self):
-        pass
-
-    def on_my_event(self, data):
-        emit('my_response', data)
-
-socketio.on_namespace(MyCustomNamespace('/ws'))
+@app.route('/')
+def hello():
+    return 'Hello World!'
 ### END SOCKET
 
 if __name__=="__main__":
